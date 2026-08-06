@@ -25,9 +25,14 @@ steps:
     model: WordLevelTrocr
     model_settings:
       model: Riksarkivet/trocr-large-handwritten-hist-swe-3-char
+      model_kwargs:
+        # WordLevelTrOCR needs decoder attentions to locate word boundaries.
+        attn_implementation: eager
     generation_settings:
       batch_size: 4
       num_beams: 1
+      interpolate_pos_encoding: true
+      max_new_tokens: 160
 
 - step: Export
   settings:

@@ -1,22 +1,179 @@
-zgx-300f - 2026-08-06 08:57:21 UTC - INFO - Include schema from 'file:///home/dgxuser/erik/projects/QualityPrediction/.venv/lib/python3.12/site-packages/xmlschema/schemas/XSD_1.1/xsd11-extra.xsd'
-zgx-300f - 2026-08-06 08:57:21 UTC - INFO - Initialized YOLO model '/home/dgxuser/erik/projects/ultralytics/models/yolo26x_all_gbg_lines_260603/train/weights/best.pt' from /home/dgxuser/erik/projects/ultralytics/models/yolo26x_all_gbg_lines_260603/train/weights/best.pt on device cuda:0
-zgx-300f - 2026-08-06 08:57:21 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/config.json "HTTP/1.1 200 OK"
-zgx-300f - 2026-08-06 08:57:21 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/model.safetensors "HTTP/1.1 302 Found"
-zgx-300f - 2026-08-06 08:57:22 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/generation_config.json "HTTP/1.1 200 OK"
-zgx-300f - 2026-08-06 08:57:33 UTC - INFO - Initialized TrOCR model from Riksarkivet/trocr-large-handwritten-hist-swe-3-char on device cuda:0.
-zgx-300f - 2026-08-06 08:57:33 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
-zgx-300f - 2026-08-06 08:57:33 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/processor_config.json "HTTP/1.1 200 OK"
-zgx-300f - 2026-08-06 08:57:34 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/chat_template.json "HTTP/1.1 404 Not Found"
-zgx-300f - 2026-08-06 08:57:34 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/chat_template.jinja "HTTP/1.1 404 Not Found"
-zgx-300f - 2026-08-06 08:57:34 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/audio_tokenizer_config.json "HTTP/1.1 404 Not Found"
-zgx-300f - 2026-08-06 08:57:34 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/processor_config.json "HTTP/1.1 200 OK"
-zgx-300f - 2026-08-06 08:57:34 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/preprocessor_config.json "HTTP/1.1 200 OK"
-zgx-300f - 2026-08-06 08:57:34 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/processor_config.json "HTTP/1.1 200 OK"
-zgx-300f - 2026-08-06 08:57:35 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/preprocessor_config.json "HTTP/1.1 200 OK"
-zgx-300f - 2026-08-06 08:57:35 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/config.json "HTTP/1.1 200 OK"
-zgx-300f - 2026-08-06 08:57:35 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/tokenizer_config.json "HTTP/1.1 200 OK"
-zgx-300f - 2026-08-06 08:57:35 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
-zgx-300f - 2026-08-06 08:57:35 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
-zgx-300f - 2026-08-06 08:57:35 UTC - INFO - Initialized TrOCR processor from Riksarkivet/trocr-large-handwritten-hist-swe-3-char.
-zgx-300f - 2026-08-06 08:57:35 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char "HTTP/1.1 200 OK"
-zgx-300f - 2026-08-06 08:57:35 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 09:23:47 UTC - INFO - Include schema from 'file:///home/dgxuser/erik/projects/QualityPrediction/.venv/lib/python3.12/site-packages/xmlschema/schemas/XSD_1.1/xsd11-extra.xsd'
+zgx-300f - 2026-08-06 09:23:48 UTC - INFO - Initialized YOLO model '/home/dgxuser/erik/projects/ultralytics/models/yolo26x_all_gbg_lines_260603/train/weights/best.pt' from /home/dgxuser/erik/projects/ultralytics/models/yolo26x_all_gbg_lines_260603/train/weights/best.pt on device cuda:0
+zgx-300f - 2026-08-06 09:23:48 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 09:23:48 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/model.safetensors "HTTP/1.1 302 Found"
+zgx-300f - 2026-08-06 09:23:48 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/generation_config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 09:24:00 UTC - INFO - Initialized TrOCR model from Riksarkivet/trocr-large-handwritten-hist-swe-3-char on device cuda:0.
+zgx-300f - 2026-08-06 09:24:00 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+zgx-300f - 2026-08-06 09:24:00 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/processor_config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 09:24:00 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/chat_template.json "HTTP/1.1 404 Not Found"
+zgx-300f - 2026-08-06 09:24:01 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/chat_template.jinja "HTTP/1.1 404 Not Found"
+zgx-300f - 2026-08-06 09:24:01 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/audio_tokenizer_config.json "HTTP/1.1 404 Not Found"
+zgx-300f - 2026-08-06 09:24:01 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/processor_config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 09:24:01 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/preprocessor_config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 09:24:01 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/processor_config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 09:24:01 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/preprocessor_config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 09:24:01 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 09:24:02 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/tokenizer_config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 09:24:02 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+zgx-300f - 2026-08-06 09:24:02 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 09:24:02 UTC - INFO - Initialized TrOCR processor from Riksarkivet/trocr-large-handwritten-hist-swe-3-char.
+zgx-300f - 2026-08-06 09:24:02 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 09:24:02 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 09:24:09 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:24:13 UTC - WARNING - Word segmentation failed on line with detected text: landh. I Pryßen skall och en Hoffrätt sättias, som slijten och rättar dhe ährenden, som genom wadh
+zgx-300f - 2026-08-06 09:24:13 UTC - WARNING - Word segmentation failed on line with detected text: rätta förfall; då RijkzCantzlern hans ställe förträda, Sädan åå och åå beger sidan Nickars Rådh     
+zgx-300f - 2026-08-06 09:24:13 UTC - WARNING - Word segmentation failed on line with detected text: 3627 på wår Eskelige käre dotter, dhen Högborne Fröken Christina förklarat och lämpat åhr.
+zgx-300f - 2026-08-06 09:24:13 UTC - WARNING - Word segmentation failed on line with detected text: i Dorpt, som och så består i en præsident aff Rijkzens Rådh och Sex aff Ridderskapet och Sex aff Borger
+zgx-300f - 2026-08-06 09:24:16 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:24:17 UTC - WARNING - Word segmentation failed on line with detected text: och Häffdingerne Uthi Nijkedt, som är tilstädes, Så och en Borgmästare aff Stocholm, Upsala Götteborg
+zgx-300f - 2026-08-06 09:24:17 UTC - WARNING - Word segmentation failed on line with detected text: sagdt är, och lyder der under alt Bötha Rijke. Dhen Tridie är Finlandz Hoffrätten i Åbo, be¬
+zgx-300f - 2026-08-06 09:24:17 UTC - WARNING - Word segmentation failed on line with detected text: Provincier och Städer som begripas Vnder Swea Rijke, egentligen så kallat i Lagen, så wäl som alle andre
+zgx-300f - 2026-08-06 09:24:17 UTC - WARNING - Word segmentation failed on line with detected text: dhe där i annor Landskap boendes, förendelst Speciel privilegio dhem andre Loffrätter äre undantagne Une Undandan.
+zgx-300f - 2026-08-06 09:24:20 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:24:20 UTC - WARNING - Word segmentation failed on line with detected text: lijdha orätt för fattigdom och annan beswär skuldh. Derföre skole Fyra Hoffrätter anställas öffuer Rij
+zgx-300f - 2026-08-06 09:24:20 UTC - WARNING - Word segmentation failed on line with detected text: trängre och mindre rättegångs beswär för dhenne tijdh kuderkastadt. Deße Hoffrätter hwar uth
+zgx-300f - 2026-08-06 09:24:20 UTC - WARNING - Word segmentation failed on line with detected text: och skickelige Män. Haffuandes der iämpte under sigh icke allenast sine Secreterer och Notarios, resan och
+zgx-300f - 2026-08-06 09:24:20 UTC - WARNING - Word segmentation failed on line with detected text: om Rijkzens rätt i Rådhe honom, dhet honom och Rijkedt är gagneligh effter dhera bästa förståndh
+zgx-300f - 2026-08-06 09:24:24 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:24:24 UTC - WARNING - Word segmentation failed on line with detected text: effterkommande sammanfordrade, då skola deße fyre Hoffrätter Joempte Retten aff Rijkzens Rådh  R) R) R) R) R) 
+zgx-300f - 2026-08-06 09:24:24 UTC - WARNING - Word segmentation failed on line with detected text: när, som frånwahru: Men på Liffuet altidh i Konungens frånwahru; Men i deß närwahru att Wa wahrararar an
+zgx-300f - 2026-08-06 09:24:24 UTC - WARNING - Word segmentation failed on line with detected text: Grenans Mayestet anginge, och icke beqwembligen annans än förmedel 2 Ständernes samman , an
+zgx-300f - 2026-08-06 09:24:24 UTC - WARNING - Word segmentation failed on line with detected text: må ingen wädie ifrån dheras doms, Man finner sigh någon beswärat, haffue macht och foogh att
+zgx-300f - 2026-08-06 09:24:28 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:24:28 UTC - WARNING - Word segmentation failed on line with detected text: satt i Jöneköping; Och består uthi en præsident aff Rijkzens Rådh; Sex aff Ridderskapet och Sex aff
+zgx-300f - 2026-08-06 09:24:28 UTC - WARNING - Word segmentation failed on line with detected text: anseende är Hoffrätten i Stocholm der Rijkzens Drotzet præsiderar, och består, för Vthan honom i anenenenenenenenenen an)
+zgx-300f - 2026-08-06 09:24:28 UTC - WARNING - Word segmentation failed on line with detected text: slutandes dhe Fem huge Embeten, Drotzet, Marsk, Ammiral Cantzler och Skattmästare Äa 2 Data
+zgx-300f - 2026-08-06 09:24:28 UTC - WARNING - Word segmentation failed on line with detected text: aff Ridderskanet och så wardee; På wänste sijdan Zijeffdingerne uthi sin ordning; och näst dhem Bor¬
+zgx-300f - 2026-08-06 09:24:32 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:24:32 UTC - WARNING - Word segmentation failed on line with detected text: ligh Ståndh, Jempte sine Secreterare, Notarier och Fiscal, och hörer där han Liffland sampt Ingerman
+zgx-300f - 2026-08-06 09:24:32 UTC - WARNING - Word segmentation failed on line with detected text: Norköping, Åbo, Wijborg, förträda Stämmarnes Rum, och haffua macht att dömma öffuer samma ährende Åhrerenee
+zgx-300f - 2026-08-06 09:24:32 UTC - WARNING - Word segmentation failed on line with detected text: Dhet andre Collegium är KrijgzRådet, som dingeras aff Marsken, och haffuer till bijsittiare
+zgx-300f - 2026-08-06 09:24:32 UTC - WARNING - Word segmentation failed on line with detected text: Rijkzens Fiscal, och alt hwadh Justitien angår. Och skola under dhenne Hoffrätten lyda alle dhe Landh
+zgx-300f - 2026-08-06 09:24:36 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:24:36 UTC - WARNING - Word segmentation failed on line with detected text: rhannat flijkt; Män för infalne orsaker skull icke kunnat sättia sine helßo samma tanckar i Wara  Wan
+zgx-300f - 2026-08-06 09:24:36 UTC - WARNING - Word segmentation failed on line with detected text: Effter som Hoffrättens Special Instruction dhet bättre och omständigare Vthwijsar Wijsar  Wesesesese Wesesesesesesesesesesesen
+zgx-300f - 2026-08-06 09:24:36 UTC - WARNING - Word segmentation failed on line with detected text: ordnar, som Rijkzens Tarff och heder kräffuer: Likwäl skole dhe ordinarie wara Tiugu käm, inne¬
+zgx-300f - 2026-08-06 09:24:36 UTC - WARNING - Word segmentation failed on line with detected text: så och sine Secreterare Notarier och Fiscal, och haffuandes sigh tillydande alt hwadh som begripes under
+zgx-300f - 2026-08-06 09:24:40 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:24:40 UTC - WARNING - Word segmentation failed on line with detected text: nes landet welße sampt; Förordna och stadga dhet således, uthalle ährenden, som Regningen
+zgx-300f - 2026-08-06 09:24:40 UTC - WARNING - Word segmentation failed on line with detected text: dhe icke till något wist taal haffue warit satte, eller än sättias kunne, för ty att man så monge hälst   a a a a ga ga gal
+zgx-300f - 2026-08-06 09:24:40 UTC - WARNING - Word segmentation failed on line with detected text: eller framdeles Vndantagas kunne, genom hwariehanda tillfälle. Dhen andre Leeffwer Wästren
+zgx-300f - 2026-08-06 09:24:40 UTC - WARNING - Word segmentation failed on line with detected text: Styrckia Ständerne och Almogen till troheet och willigheet; Och uthi alle andre ährenden, som dhem för  d) d) d) d) d) d) d)
+zgx-300f - 2026-08-06 09:24:44 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:24:44 UTC - WARNING - Word segmentation failed on line with detected text: Krygz Rådet, Ammiralitetedh, Cantzelliedt och Räckninge Commaren. Doch Konungens Rätt
+zgx-300f - 2026-08-06 09:24:44 UTC - WARNING - Word segmentation failed on line with detected text: Then är och pålagt och förtroedt att öffuersij alle Protocoll och domar felte Vthi nedre Rätterne Rä Rä
+zgx-300f - 2026-08-06 09:24:44 UTC - WARNING - Word segmentation failed on line with detected text: Deße haffua fordendagz warit brukade i alle förnemmene Rijkens tiensten; Men för dhet dhe an¬
+zgx-300f - 2026-08-06 09:24:44 UTC - WARNING - Word segmentation failed on line with detected text: ket. Wij trädandes uthi wåre Förfäders footspor, och dheres förehaffuande befinnandes Fäderääer
+zgx-300f - 2026-08-06 09:24:48 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:24:48 UTC - WARNING - Word segmentation failed on line with detected text: eller dijtkomma medh ordentligit wedh. Och fördenskull dömer thenne Konungens doms domb.
+zgx-300f - 2026-08-06 09:24:48 UTC - WARNING - Word segmentation failed on line with detected text: sin district uptaga och affdöma alle Nättegångs ährenden, som medh skääl för dhem komme, och 
+zgx-300f - 2026-08-06 09:24:48 UTC - WARNING - Word segmentation failed on line with detected text: ordinarie genom deße efftersch:ne fem Collegia eller Broderskap Thombligen. Hoffrätten
+zgx-300f - 2026-08-06 09:24:48 UTC - WARNING - Word segmentation failed on line with detected text: aff åtskillige infall särdragne, Hwar öffuer Konungen haffuer altidh warit nödstält på folck
+zgx-300f - 2026-08-06 09:24:52 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:24:52 UTC - WARNING - Word segmentation failed on line with detected text: Konungar äger styra och rådha, Borgom och Landom, och allen sin och Chronone rätt som Lagh
+zgx-300f - 2026-08-06 09:24:52 UTC - WARNING - Word segmentation failed on line with detected text: fall Rijkzens Drotzet Præsidera: Eller der ingen för dhen tijdh wore, eller han wore siuk eller uthi
+zgx-300f - 2026-08-06 09:24:52 UTC - WARNING - Word segmentation failed on line with detected text: Ährenden försummade eller illa och förtreetligen handterade, och förorsakat mycken annan willo
+zgx-300f - 2026-08-06 09:24:52 UTC - WARNING - Word segmentation failed on line with detected text: Och ingen ehuru högh han ähr, haffue wißordh att undraga sigh dhenne Rätt, Och skall å uthi sådanne då dådh då då då dander der då då då då dådalse
+zgx-300f - 2026-08-06 09:24:56 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:24:56 UTC - WARNING - Word segmentation failed on line with detected text: Så och fyra andra Krijgz Officerer, hwadh håller dhe nu bekiänne eller fordom betiens haffue Embeten Embettere Embetete Embetstttttta Emberserse
+zgx-300f - 2026-08-06 09:24:56 UTC - WARNING - Word segmentation failed on line with detected text: och skadha. Ty haffue näst stadhen kroungen sijkt medell att bötha dhenne tranckheet, och giord
+zgx-300f - 2026-08-06 09:24:56 UTC - WARNING - Word segmentation failed on line with detected text: effter hwars ordens wyrde; Der näst på högr sijdan alle Hoffrätterne hwar effter annan, först dhe
+zgx-300f - 2026-08-06 09:24:56 UTC - WARNING - Word segmentation failed on line with detected text: Inbyggiarne icke rehan hinder och mödha kunne sökia rätten på en orth. Och fördenskull fört
+zgx-300f - 2026-08-06 09:25:00 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:00 UTC - WARNING - Word segmentation failed on line with detected text: ståendes i en Præstident aff Rijkzens Rådh, Sex aff Ridderskapet, och Sex andre beskedelige och lärde Män))))))))))))))))))))))))))))))))
+zgx-300f - 2026-08-06 09:25:00 UTC - WARNING - Word segmentation failed on line with detected text: twenne aff Rijkzens Rådh, och enkannerligen dhem som betiäna eller betiänt haffue Krijgz Embeten Embetetetan
+zgx-300f - 2026-08-06 09:25:00 UTC - WARNING - Word segmentation failed on line with detected text: och uthöffuer Criminal saker, förklara sigh på dhe skyldiges Lijff och dädh. På döden så i Konungens
+zgx-300f - 2026-08-06 09:25:00 UTC - WARNING - Word segmentation failed on line with detected text: Medh Successionen till Rijket, bliffuer aldeles widh Arfföreningen, såsom dhen Anno 1644) ) )pen) ) ) ) ) ) ) ) ) ) ) peng r rengggg
+zgx-300f - 2026-08-06 09:25:04 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:04 UTC - WARNING - Word segmentation failed on line with detected text: Till Loffrätten före alle Rättegångs saken som anthen directe lyda under Konungens domb¬
+zgx-300f - 2026-08-06 09:25:04 UTC - WARNING - Word segmentation failed on line with detected text: Nästkonungens högheet haffuer aff ålder warit och skall här effter bliffua störste wyrdning har
+zgx-300f - 2026-08-06 09:25:04 UTC - WARNING - Word segmentation failed on line with detected text: kallelse ransakas och åtskillias motte, Och altså deße Hoffrätten tillijka bleffue aff oß eller wåre
+zgx-300f - 2026-08-06 09:25:04 UTC - WARNING - Word segmentation failed on line with detected text: Riket är och så stort och widt, så wäl som medh Siö och Sandh skildt åth, att Vndersåtherne och 
+zgx-300f - 2026-08-06 09:25:08 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:08 UTC - WARNING - Word segmentation failed on line with detected text: eller elliest för Konungens domb höra. Doch affmindre Personer, effter som samma Provincis är 
+zgx-300f - 2026-08-06 09:25:08 UTC - WARNING - Word segmentation failed on line with detected text: rätt, bägheet, gagn och wälstånd, effter dhen Eedz inneholdh, som dhe Konungen och Rijket giordt)))))))))) ))))))))))))))) 
+zgx-300f - 2026-08-06 09:25:08 UTC - WARNING - Word segmentation failed on line with detected text: præsentera Konungen saken och deß skääl, och effter deß Resolution, sedan ährendet slutha och förklara
+zgx-300f - 2026-08-06 09:25:08 UTC - WARNING - Word segmentation failed on line with detected text: ket, medh lijka macht och myndigheet och effter ett sätt. Dhen förste och förnembste aff rum och 
+zgx-300f - 2026-08-06 09:25:12 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:12 UTC - WARNING - Word segmentation failed on line with detected text: Deßes sampt och i hemmerheet åhrge, skall beståå förnembligt der uthi; att dhe påminna Konungen Konungengenge
+zgx-300f - 2026-08-06 09:25:12 UTC - WARNING - Word segmentation failed on line with detected text: angår eller der aff gånger, skole effter hafwet och ettz ährendes egenskap och natur lända och driffua
+zgx-300f - 2026-08-06 09:25:12 UTC - WARNING - Word segmentation failed on line with detected text: Försåge sigh någon affså högh Condristor i Rijket, eller i ett så högt ährende, att dhet Konungen och
+zgx-300f - 2026-08-06 09:25:12 UTC - WARNING - Word segmentation failed on line with detected text: Vthradhe, Ty tarff han Rådh, Embetzmän och heffdingar som honom bytta, Hwilke han wällia
+zgx-300f - 2026-08-06 09:25:16 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:16 UTC - WARNING - Word segmentation failed on line with detected text: Stafuestendömet Finland och bägge Carelerne. Dhen Fierde och sidste är Liffländige Hoffrätten
+zgx-300f - 2026-08-06 09:25:16 UTC - WARNING - Word segmentation failed on line with detected text: andra Ehrlige beskadelige Män; Och haffuer sine Secreterare Notarias Fiscal, som om dhen förre , Dhan, , , , an
+zgx-300f - 2026-08-06 09:25:16 UTC - WARNING - Word segmentation failed on line with detected text: och tager effter Sweriges Lagh, Rijkzens tarff och godtyckio sino.
+zgx-300f - 2026-08-06 09:25:16 UTC - WARNING - Word segmentation failed on line with detected text: der till Ingången under förbe:te Fem höge Embeten. Och så medh Konungens Nämbd, Cammar Rådh
+zgx-300f - 2026-08-06 09:25:19 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:20 UTC - WARNING - Word segmentation failed on line with detected text: Effter Rijket är widh, ährender flere och wichtigare, än att Konungen förmå ensammar, dhem dhen dhenn dhen
+zgx-300f - 2026-08-06 09:25:20 UTC - WARNING - Word segmentation failed on line with detected text: Rijkzens Rådh, som Konungen sigh tager och wällier aff inföddom Riddaren och Swenom; Och endoch
+zgx-300f - 2026-08-06 09:25:20 UTC - WARNING - Word segmentation failed on line with detected text: then sällen haffue warit tilstädes, Och wedh dheres närwahru warit medh ährenden öffuerhopade, och
+zgx-300f - 2026-08-06 09:25:20 UTC - WARNING - Word segmentation failed on line with detected text: klaga dhet Kongen, och ordentligen sökia revision
+zgx-300f - 2026-08-06 09:25:23 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:24 UTC - WARNING - Word segmentation failed on line with detected text: och högheet oförkränckt och i ingen motto förminskat
+zgx-300f - 2026-08-06 09:25:24 UTC - WARNING - Word segmentation failed on line with detected text: mästerne aff förbe:te Sex Städer.
+zgx-300f - 2026-08-06 09:25:24 UTC - WARNING - Word segmentation failed on line with detected text: i Westeråhs giordh, och sedan i Norköping, A:o 3604 förnyat och widgått, och så sidst i Stocholm H:r * S S S) S) Sta S
+zgx-300f - 2026-08-06 09:25:27 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:28 UTC - WARNING - Word segmentation failed on line with detected text: Sexton Personer eller bijsittiare; Fyra Rijkzens Rådh; Sex aff Ridderskapet, och Sex affandra lärde
+zgx-300f - 2026-08-06 09:25:28 UTC - WARNING - Word segmentation failed on line with detected text: komma eller betees ordinarie eller Getracrimarie, altidh låthe sigh wårda om Konungens och Rijkzens) ) ) ) ) ) Ri Rij Rij Rij R
+zgx-300f - 2026-08-06 09:25:28 UTC - WARNING - Word segmentation failed on line with detected text: 3 3)
+zgx-300f - 2026-08-06 09:25:31 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:35 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:36 UTC - WARNING - Word segmentation failed on line with detected text: Sexten Personer eller bijsittiare; Fyra Rijkzens Rådh; Sex aff Ridderskapet, och Sex aff andra lärde
+zgx-300f - 2026-08-06 09:25:37 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:37 UTC - INFO - Wrote Json file to /home/dgxuser/erik/projects/QualityPrediction/data/eval_swedish_lion_26/htrflow_json/1634_rs_regeringsform__R0001323_00005__d0688e88fe35.json
+zgx-300f - 2026-08-06 09:25:42 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:42 UTC - WARNING - Word segmentation failed on line with detected text: huset wara till befrugtande, eme¬
+zgx-300f - 2026-08-06 09:25:42 UTC - WARNING - Word segmentation failed on line with detected text: Interims Bokhållaren Galle, så ofta
+zgx-300f - 2026-08-06 09:25:42 UTC - WARNING - Word segmentation failed on line with detected text: huset, äro wäl fournerade af in¬
+zgx-300f - 2026-08-06 09:25:42 UTC - WARNING - Word segmentation failed on line with detected text: gen widare behålldning i hans
+zgx-300f - 2026-08-06 09:25:46 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:46 UTC - WARNING - Word segmentation failed on line with detected text: någon upphandling skolat skie, i¬
+zgx-300f - 2026-08-06 09:25:46 UTC - WARNING - Word segmentation failed on line with detected text: kunnandes sådant utom dess eij
+zgx-300f - 2026-08-06 09:25:46 UTC - WARNING - Word segmentation failed on line with detected text: dan Galle för den honom på ett åhr
+zgx-300f - 2026-08-06 09:25:46 UTC - WARNING - Word segmentation failed on line with detected text: Johan Nymans för honom ingång
+zgx-300f - 2026-08-06 09:25:50 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:50 UTC - WARNING - Word segmentation failed on line with detected text: någon osäkerhet derom för Barn¬
+zgx-300f - 2026-08-06 09:25:50 UTC - WARNING - Word segmentation failed on line with detected text: tigt wara utbetalte, så att in
+zgx-300f - 2026-08-06 09:25:50 UTC - WARNING - Word segmentation failed on line with detected text: uppdragne Interims Bokhållare syss))
+zgx-300f - 2026-08-06 09:25:50 UTC - WARNING - Word segmentation failed on line with detected text: lan wid Barnhuset, stält suffi¬
+zgx-300f - 2026-08-06 09:25:54 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:54 UTC - WARNING - Word segmentation failed on line with detected text: dem han ock, med leveranteurernes **
+zgx-300f - 2026-08-06 09:25:54 UTC - WARNING - Word segmentation failed on line with detected text: Skaffaren månateligen giör redo
+zgx-300f - 2026-08-06 09:25:54 UTC - WARNING - Word segmentation failed on line with detected text: blifwit anslagne, och hwarföre
+zgx-300f - 2026-08-06 09:25:54 UTC - WARNING - Word segmentation failed on line with detected text: muel de Schumans och Bryggarens
+zgx-300f - 2026-08-06 09:25:58 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:25:58 UTC - WARNING - Word segmentation failed on line with detected text: stiga till någon summa, icke eller
+zgx-300f - 2026-08-06 09:25:58 UTC - WARNING - Word segmentation failed on line with detected text: ökas eller minskas, kan man in
+zgx-300f - 2026-08-06 09:25:58 UTC - WARNING - Word segmentation failed on line with detected text: Silfmt, huru wida den till 1745
+zgx-300f - 2026-08-06 09:25:58 UTC - WARNING - Word segmentation failed on line with detected text: sedan med 1743 och 44 åhrs böcker så wi
+zgx-300f - 2026-08-06 09:26:02 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:26:02 UTC - WARNING - Word segmentation failed on line with detected text: ne borgen. Åhr och dagar, som
+zgx-300f - 2026-08-06 09:26:02 UTC - WARNING - Word segmentation failed on line with detected text: små utgiffter wid Barnhuset)))))))))
+zgx-300f - 2026-08-06 09:26:02 UTC - WARNING - Word segmentation failed on line with detected text: dock att Bokhållaren för hwad som
+zgx-300f - 2026-08-06 09:26:02 UTC - WARNING - Word segmentation failed on line with detected text: cient caution, igenom Hökarens Sa¬
+zgx-300f - 2026-08-06 09:26:06 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:26:06 UTC - WARNING - Word segmentation failed on line with detected text: hand finnes, än de påster, hwilc¬
+zgx-300f - 2026-08-06 09:26:06 UTC - WARNING - Word segmentation failed on line with detected text: 18o Balancen till 1744 wijses uti Cassa
+zgx-300f - 2026-08-06 09:26:06 UTC - WARNING - Word segmentation failed on line with detected text: da avancerat, att den förra är
+zgx-300f - 2026-08-06 09:26:06 UTC - WARNING - Word segmentation failed on line with detected text: quitterade räkningar bewijst rig¬
+zgx-300f - 2026-08-06 09:26:10 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:26:10 UTC - WARNING - Word segmentation failed on line with detected text: 19o Proviant och förrådshusen wid Barn
+zgx-300f - 2026-08-06 09:26:10 UTC - WARNING - Word segmentation failed on line with detected text: på Banquen fått nödige medel,
+zgx-300f - 2026-08-06 09:26:10 UTC - WARNING - Word segmentation failed on line with detected text: genom Directeurernes Assignationer
+zgx-300f - 2026-08-06 09:26:10 UTC - WARNING - Word segmentation failed on line with detected text: newarande åhrs inkiöp, hwartill
+zgx-300f - 2026-08-06 09:26:14 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:26:14 UTC - WARNING - Word segmentation failed on line with detected text: och den senare innan kort blif¬
+zgx-300f - 2026-08-06 09:26:14 UTC - WARNING - Word segmentation failed on line with detected text: förr skrefne stå.
+zgx-300f - 2026-08-06 09:26:14 UTC - WARNING - Word segmentation failed on line with detected text: ka till dageligen förefallande
+zgx-300f - 2026-08-06 09:26:14 UTC - WARNING - Word segmentation failed on line with detected text: brister står wärcket i answar,
+zgx-300f - 2026-08-06 09:26:18 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:26:18 UTC - WARNING - Word segmentation failed on line with detected text: wer sluten.
+zgx-300f - 2026-08-06 09:26:18 UTC - WARNING - Word segmentation failed on line with detected text: räkningen wara 4485 Dr 10 ⁒ 16 pgr 6 pgr  6 6 6 6 6 6 6 6 6 6 6 6 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
+zgx-300f - 2026-08-06 09:26:18 UTC - WARNING - Word segmentation failed on line with detected text: Notarius Orphan u.
+zgx-300f - 2026-08-06 09:26:18 UTC - WARNING - Word segmentation failed on line with detected text: tet så noga weta
+zgx-300f - 2026-08-06 09:26:21 UTC - WARNING - The longest sequence of this batch has 160 tokens, which is the maximum length, as specified by `max_new_tokens=160`. This may indicate that the sequence was truncated.
+zgx-300f - 2026-08-06 09:26:21 UTC - WARNING - Word segmentation failed on line with detected text: J: J: Helleday.
+zgx-300f - 2026-08-06 09:26:21 UTC - INFO - Wrote Json file to /home/dgxuser/erik/projects/QualityPrediction/data/eval_swedish_lion_26/htrflow_json/Allm_nna_barnhuset_A1AA_1_r_1740-1744__0642_Delta_438__2396a6bdc9e3.json
+zgx-300f - 2026-08-06 09:26:21 UTC - INFO - Processed 2 pages in 139 seconds (average 69.530 seconds per page)
