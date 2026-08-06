@@ -192,7 +192,8 @@ class Json(Serializer):
 
     This serializer extracts all content from the collection and saves
     it as json. The resulting json file(s) include properties that are
-    not supported by Alto or Page XML, such as region confidence scores.
+    not supported by Alto or Page XML, such as region confidence scores
+    and per-token recognition confidence scores.
 
     # Examples
     Example usage with the `Export` pipeline step:
