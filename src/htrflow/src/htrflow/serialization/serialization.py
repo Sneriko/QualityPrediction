@@ -16,7 +16,7 @@ from importlib import metadata
 import xmlschema
 from jinja2 import Environment, FileSystemLoader
 
-from htrflow.document import Document, Region
+from htrflow.document import Document, Region, Text
 from htrflow.progress import get_steps
 from htrflow.utils.geometry import Polygon
 
@@ -219,6 +219,20 @@ class Json(Serializer):
         def default(node):
             if isinstance(node, Polygon):
                 return str(node)
+            if isinstance(node, Text):
+                # Keep token_scores in the schema even when the recognizer did
+                # not provide any.  The generic truthiness filter below used to
+                # silently omit the field for those lines, making it impossible
+                # for consumers to distinguish old output from an empty score
+                # list produced by a model without token confidences.
+                transcription = {
+                    "text": node.text,
+                    "token_scores": node.token_scores,
+                    "character_scores": node.character_scores,
+                }
+                if node.confidence is not None:
+                    transcription["confidence"] = node.confidence
+                return transcription
             attributes = {key: val for key, val in node.__dict__.items() if val}
             return attributes
 
