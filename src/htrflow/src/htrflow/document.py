@@ -43,23 +43,6 @@ class Text(_RegionAttachment):
         self.confidence = confidence
         self.token_scores = token_scores or []
 
-    @property
-    def character_scores(self) -> list[tuple[str, float]]:
-        """Expand recognition-token confidences to individual characters.
-
-        TrOCR's transition probabilities are produced per decoder token. For
-        character-level checkpoints each decoded token is normally one
-        character, so this preserves the model's character probabilities
-        directly. If a tokenizer emits a multi-character token, every
-        character receives that token's probability; it would be misleading
-        to invent separate probabilities the model did not produce.
-        """
-        return [
-            (character, confidence)
-            for token, confidence in self.token_scores
-            for character in token
-        ]
-
     def attach(self, region: "Region"):
         region.transcription.append(self)
         region.transcription.sort(key=lambda transcription: transcription.confidence, reverse=True)
