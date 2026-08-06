@@ -1,14 +1,11 @@
 import logging
-import os
-import shutil
 import socket
 import time
-from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 from typing import Iterable
 
 import typer
-import yaml
 from typing_extensions import Annotated
 
 
@@ -26,6 +23,13 @@ class LogLevel(str, Enum):
     error = "error"
 
 
+class OutputFormat(str, Enum):
+    alto = "alto"
+    page = "page"
+    plaintext = "txt"
+    json = "json"
+
+
 class HTRFLOWLoggingFormatter(logging.Formatter):
     """Logging formatter for HTRFLOW"""
 
@@ -38,39 +42,47 @@ class HTRFLOWLoggingFormatter(logging.Formatter):
         super().__init__(fmt, datefmt)
 
 
-def setup_pipeline_logging(logfile: str | None, loglevel: LogLevel):
+def setup_pipeline_logging(logfile: str, loglevel: LogLevel):
     logging.getLogger("transformers").setLevel(logging.ERROR)
     logger = logging.getLogger()
     logger.setLevel(loglevel.value.upper())
-    if logfile is None:
-        handler = logging.StreamHandler()
-    else:
-        handler = logging.FileHandler(logfile, mode="w")
+    handler = logging.FileHandler(logfile, mode="w")
     handler.setFormatter(HTRFLOWLoggingFormatter())
     logger.addHandler(handler)
     return logger
 
 
-@app.command("pipeline")
-def run_pipeline(
+@app.callback()
+def callback():
+    pass
+
+
+@app.command()
+def pipeline(
     pipeline: Annotated[str, typer.Argument(help="Path to a HTRflow pipeline YAML file")],
     inputs: Annotated[
         list[str] | None,
         typer.Argument(help="Paths to input images. May be paths to directories of images or paths to single images."),
     ] = None,
-    logfile: Annotated[
-        str,
-        typer.Option(help="Where to write logs to. If not provided, logs will be printed to the standard output."),
-    ] = None,
+    logfile: Annotated[str, typer.Option(help="Logfile")] = "htrflow.log",
     loglevel: Annotated[LogLevel, typer.Option(help="Loglevel", case_sensitive=False)] = LogLevel.info,
-    backup: Annotated[bool, typer.Option(help="Save a pickled backup after each pipeline step.")] = False,
-    batch_output: Annotated[
-        int | None,
-        typer.Option(help="Write continuous output in batches of this size (number of images)."),
-    ] = 1,
-    label: Annotated[
+    output: Annotated[
         str | None,
-        typer.Option(help="Collection label"),
+        typer.Option(
+            help=(
+                "Output directory. Adds an extra `Export` step to the end of the given pipeline. Uses the format "
+                "given by --output_format, or plaintext if not given."
+            )
+        ),
+    ] = None,
+    output_format: Annotated[
+        OutputFormat | None,
+        typer.Option(
+            help=(
+                "Output format. Adds an extra `Export` step to the end of the given pipeline. Writes to the directory "
+                "given by --output, or 'outputs' if not given."
+            )
+        ),
     ] = None,
     inputs_file: Annotated[
         str | None,
@@ -78,6 +90,7 @@ def run_pipeline(
             help="A text file containing newline-separated paths to input images. Requires INPUTS to be empty."
         ),
     ] = None,
+    workers: Annotated[int, typer.Option(help="Number of concurrent workers")] = 1,
 ):
     """Run a HTRflow pipeline"""
 
@@ -86,26 +99,22 @@ def run_pipeline(
 
     # Slow imports! Only import after all CLI arguments have been resolved.
     from htrflow.pipeline.pipeline import Pipeline
-    from htrflow.pipeline.steps import auto_import
+    from htrflow.pipeline.steps import Export, auto_import
 
-    if isinstance(pipeline, Pipeline):
-        pipe = pipeline
-        config = {}
-    else:
-        with open(pipeline, "r") as file:
-            config = yaml.safe_load(file)
-        pipe = Pipeline.from_config(config)
+    pipeline = Pipeline.from_config(pipeline)
 
-    pipe.do_backup = backup
+    if output or output_format:
+        output = output or "outputs"
+        output_format = output_format or "txt"
+        pipeline.steps.append(Export(output, output_format))
 
     tic = time.time()
-    collections = auto_import(inputs, max_size=batch_output)
     n_pages = 0
-    for collection in collections:
-        if label:
-            collection.label = label
-        collection = pipe.run(collection)
-        n_pages += len(collection.pages)
+
+    with ThreadPoolExecutor(workers) as executor:
+        for document in auto_import(inputs):
+            executor.submit(pipeline.run, document)
+            n_pages += 1
     toc = time.time()
 
     total_time = toc - tic
@@ -115,56 +124,6 @@ def run_pipeline(
         total_time,
         total_time / n_pages if n_pages > 0 else -1.0,
     )
-
-
-@app.command("evaluate")
-def run_evaluation(
-    gt: Annotated[
-        str,
-        typer.Argument(
-            help="Path to directory with ground truth files. Should have two subdirectories `images` and `xmls`."
-        ),
-    ],
-    candidates: Annotated[
-        list[str],
-        typer.Argument(help="Paths to pipelines or directories containing already generated Page XMLs."),
-    ],
-):
-    """
-    Evaluate HTR transcriptions against ground truth
-    """
-
-    from htrflow.evaluate import evaluate
-    from htrflow.pipeline.pipeline import Pipeline
-    from htrflow.pipeline.steps import Export
-
-    run_name = datetime.now().strftime("run_%Y%m%d_%H%M%S")
-    run_dir = os.path.join("evaluation", run_name)
-    os.makedirs(run_dir)
-
-    # inputs are pipelines -> run the pipelines before evaluation
-    if all(os.path.isfile(candidate) for candidate in candidates):
-        images = os.path.join(gt, "images")
-        pipelines = candidates
-        candidates = []
-        for i, pipe in enumerate(pipelines):
-            # Create a directory under `run_dir` to save pipeline results,
-            # logs and a copy of the pipeline yaml to.
-            pipeline_name = f"pipeline{i}_{os.path.splitext(os.path.basename(pipe))[0]}"
-            pipeline_dir = os.path.join(run_dir, pipeline_name)
-            os.mkdir(pipeline_dir)
-            shutil.copy(pipe, os.path.join(pipeline_dir, pipeline_name + ".yaml"))
-
-            with open(pipe, "r") as file:
-                pipeline = Pipeline.from_config(yaml.safe_load(file))
-            pipeline.steps.append(Export(run_dir, "page"))
-
-            # Run the pipeline
-            run_pipeline(pipeline, images, logfile=os.path.join(pipeline_dir, "htrflow.log"), label=pipeline_name)
-            candidates.append(os.path.join(run_dir, pipeline_name))
-
-    df = evaluate(gt, *candidates)
-    df.to_csv(os.path.join(run_dir, "evaluation_results.csv"))
 
 
 def get_inputs(inputs: list[str] | None, inputs_file: str | None) -> Iterable[str]:

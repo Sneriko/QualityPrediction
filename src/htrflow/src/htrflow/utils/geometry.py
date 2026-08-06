@@ -203,6 +203,9 @@ class Polygon:
                 or `Point` instances.
         """
         self.points = [Point(*point) for point in points]
+        xs = [x for x, _ in self.points]
+        ys = [y for _, y in self.points]
+        self.bbox = Bbox(min(xs), min(ys), max(xs), max(ys))
 
     def __str__(self) -> str:
         return " ".join(f"{x},{y}" for x, y in self)
@@ -219,11 +222,29 @@ class Polygon:
         """
         return Polygon(point + dest for point in self)
 
-    def bbox(self) -> Bbox:
-        """The smallest bounding box that encloses the polygon"""
-        xs = [x for x, _ in self]
-        ys = [y for _, y in self]
-        return Bbox(min(xs), min(ys), max(xs), max(ys))
+    @property
+    def height(self) -> int:
+        return self.bbox.height
+
+    @property
+    def width(self) -> int:
+        return self.bbox.width
+
+    @property
+    def xmin(self) -> int:
+        return self.bbox.xmin
+
+    @property
+    def ymin(self) -> int:
+        return self.bbox.ymin
+
+    @property
+    def xmax(self) -> int:
+        return self.bbox.xmax
+
+    @property
+    def ymax(self) -> int:
+        return self.bbox.ymax
 
     def as_nparray(self) -> npt.NDArray[np.int32]:
         """The polygon as a [[x1, y1], ..., [xn, yn]] numpy array"""
@@ -278,7 +299,7 @@ def mask2polygon(mask: Mask, epsilon: float = 0.005) -> Polygon:
 
     if len(polygons) > 1:
         logger.warning("Mask is not connected. Using the largest connected component")
-        polygons.sort(key=lambda pol: pol.bbox().area, reverse=True)
+        polygons.sort(key=lambda pol: pol.bbox.area, reverse=True)
 
     return polygons[0]
 
@@ -317,10 +338,9 @@ def polygon2mask(polygon: Polygon, shape: tuple[int, int] | None = None) -> Mask
             possible shape that encloses the input polygon.
     """
     if shape is None:
-        bbox = polygon.bbox()
-        shape = bbox.ymax, bbox.xmax
+        shape = polygon.ymax, polygon.xmax
 
-    mask = np.zeros(shape, dtype=np.int32)
+    mask = np.zeros(shape, dtype=np.uint8)
     if len(polygon) > 0:
         mask = cv2.fillPoly(mask, [polygon.as_nparray()], color=255)
     return mask

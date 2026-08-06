@@ -14,20 +14,19 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed",
 ]
-requires-python = ">=3.10,<3.13"
+requires-python = ">=3.10,<3.14"
 
 dependencies = [
     "jinja2 >= 3.1.5",
     "numpy",
-    "opencv-python >=4.11.0.86",
+    "opencv-python-headless >=4.11.0.86",
     "tqdm >=4.66.2,<5",
     "xmlschema >=3.0.2,<4",
     "typer>=0.12.0",
     "rich >=13.7.1",
-    "jiwer >=3.0.4",
-    "pandas",
-    "pagexml-tools >=0.5.0",
-    "transformers[torch] >=4.47",
+    "jiwer >=4.0",
+    "transformers >=4.47",
+    "torch >= 2.6",
     "huggingface-hub[cli] >=0.28.1",
     "ultralytics >=8.3.74",
     "pydantic>=2.10.6",
@@ -42,15 +41,14 @@ Repository = "https://github.com/AI-Riksarkivet/htrflow"
 htrflow = "htrflow.cli:app"
 
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "pytest >=8.0.1",
     "pytest-cov >=4.1.0",
     "pytest-github-actions-annotate-failures >=0.2.0",
     "python-dotenv >=1.0.1",
     "ruff >=0.6.2",
     "uv>=0.4.12",
-    "lorem",
     "tox-uv>=1.13.0",
 ]
 
@@ -70,6 +68,9 @@ docs = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/htrflow"]
+
 [tool.hatch.metadata]
 allow-direct-references = true  
 
@@ -78,7 +79,6 @@ addopts = "-v --cov htrflow --cov-report term-missing --no-cov-on-fail"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "gpu: marks tests as gpu (deselect with '-m \"not gpu\"')",
-    "openmmlab: marks tests as openmmlab (deselect with '-m \"not openmmlab\"')",
     "teklia: marks tests as teklia (deselect with '-m \"not teklia\"')"
 ]
 pythonpath = "src"

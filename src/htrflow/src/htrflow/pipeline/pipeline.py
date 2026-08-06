@@ -1,47 +1,34 @@
-import logging
-from typing import Sequence
+import yaml
 
-from htrflow.pipeline.steps import PipelineStep, init_step
-from htrflow.serialization import pickle_collection
-
-
-logger = logging.getLogger(__name__)
+from htrflow import progress
+from htrflow.pipeline.steps import PipelineConfig, PipelineStep, init_step
 
 
 class Pipeline:
-    def __init__(self, steps: Sequence[PipelineStep]):
+    steps: list[PipelineStep]
+
+    def __init__(self, steps: list[PipelineStep]):
         self.steps = steps
-        self.pickle_path = None
-        self.do_backup = False
-        for step in self.steps:
-            step.parent_pipeline = self
 
     @classmethod
-    def from_config(self, config: dict[str, str]):
-        """Init pipeline from config"""
-        return Pipeline([init_step(step["step"], step.get("settings", {})) for step in config["steps"]])
+    def from_config(cls, path: str) -> "Pipeline":
+        """
+        Create a pipeline from a YAML config file.
 
-    def run(self, collection, start=0):
-        """Run pipeline on collection"""
-        for i, step in enumerate(self.steps[start:]):
-            step_name = f"{step} (step {start + i + 1} / {len(self.steps)})"
-            logger.info("Running step %s", step_name)
-            try:
-                collection = step.run(collection)
-            except Exception:
-                if self.pickle_path:
-                    logger.exception(
-                        "Pipeline failed on step %s. A backup collection is saved at %s",
-                        step_name,
-                        self.pickle_path,
-                    )
-                else:
-                    logger.exception("Pipeline failed on step %s", step_name)
-                raise
+        Arguments:
+            path: Path to YAML config.
+        """
+        with open(path, "r") as file:
+            config = yaml.safe_load(file)
 
-            if self.do_backup:
-                self.pickle_path = pickle_collection(collection)
-        return collection
+        config = PipelineConfig(**config)
+        steps = list(map(init_step, config.steps))
+        return cls(steps)
 
-    def metadata(self):
-        return [step.metadata for step in self.steps if step.metadata]
+    def run(self, document):
+        """Run pipeline on document"""
+        for step in self.steps:
+            progress.step(document, step=step)
+            document = step.run(document)
+        progress.done(document)
+        return document

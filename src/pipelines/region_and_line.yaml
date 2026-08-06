@@ -24,7 +24,7 @@ steps:
   settings:
     model: WordLevelTrocr
     model_settings:
-      model: /mnt/work/models/swedish-lion-2026/tokenlevel-large-0e405be/epoch=6-step=116662-validation_loss=0.0956-cer=0.0393
+      model: Riksarkivet/trocr-large-handwritten-hist-swe-3-char
     generation_settings:
       batch_size: 4
       num_beams: 1

@@ -1,14 +1,15 @@
 import logging
 from typing import Any
 
-import numpy as np
 import torch
+from PIL import Image
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 
+from htrflow.document import Region, Text
 from htrflow.models.base_model import BaseModel
 from htrflow.models.download import get_model_info
 from htrflow.models.huggingface.mixins import ConfidenceMixin
-from htrflow.results import Result
+from htrflow.utils.geometry import Bbox
 
 
 logger = logging.getLogger(__name__)
@@ -63,9 +64,23 @@ class TrOCR(BaseModel, ConfidenceMixin):
         # Initialize model
         model_kwargs = model_kwargs or {}
         self.decoding = model_kwargs.pop("decoding", None)
-
         self.model = VisionEncoderDecoderModel.from_pretrained(model, **model_kwargs)
         self.model.to(self.device)
+
+        # Workaround for transformers' TrOCRSinusoidalPositionalEmbedding: its
+        # get_embedding() always creates weights on CPU, and the checkpoint stores
+        # them as a meta tensor (no actual data). Both issues cause a device mismatch
+        # at inference time: position_ids are on CUDA but self.weights is on CPU/meta.
+        # Fix: recompute the sinusoidal weights from scratch and place them on the
+        # correct device. get_embedding() is pure math so no checkpoint data is needed.
+        if hasattr(self.model.decoder, "model") and hasattr(self.model.decoder.model, "decoder"):
+            embed_pos = getattr(self.model.decoder.model.decoder, "embed_positions", None)
+            if embed_pos is not None and hasattr(embed_pos, "weights"):
+                num_pos = embed_pos.weights.shape[0] if not embed_pos.weights.is_meta else 2048
+                embed_pos.weights = embed_pos.get_embedding(
+                    num_pos, embed_pos.embedding_dim, embed_pos.padding_idx
+                ).to(self.device)
+
         logger.info("Initialized TrOCR model from %s on device %s.", model, self.model.device)
 
         # Initialize processor
@@ -86,7 +101,7 @@ class TrOCR(BaseModel, ConfidenceMixin):
         # Map `compute_transition_scores` method from decoder to model
         self.compute_transition_scores = self.model.decoder.compute_transition_scores
 
-    def _predict(self, images: list[np.ndarray], **generation_kwargs) -> list[Result]:
+    def _predict(self, images: list[Image], **generation_kwargs) -> list[Text]:
         """TrOCR-specific prediction method.
 
         This method is used by `predict()` and should typically not be
@@ -119,7 +134,6 @@ class TrOCR(BaseModel, ConfidenceMixin):
         # `texts` and `scores` are flattened lists so we need to iterate over them in steps.
         # This is done to ensure that the list of results correspond 1-to-1 with the list of images.
         results = []
-        metadata = self.metadata | {"generation_kwargs": generation_kwargs}
         step = generation_kwargs["num_return_sequences"]
 
         # Create the option to create a clean decoded text. Important for historical sources/models.
@@ -130,15 +144,14 @@ class TrOCR(BaseModel, ConfidenceMixin):
                     texts[i] = text.encode("utf-8").decode(self.decoding)
                 except UnicodeEncodeError as e:
                     logger.warning(
-                        "Text %s could not be decoded with decoding '%s'. Error: %s",
-                        text, self.decoding, e
+                        "Text %s could not be decoded with decoding '%s'. Error: %s", text, self.decoding, e
                     )
                     pass
 
         for i in range(0, len(texts), step):
             texts_chunk = texts[i : i + step]
             scores_chunk = scores[i : i + step]
-            result = Result.text_recognition_result(metadata, texts_chunk, scores_chunk)
+            result = [Text(text=text, confidence=score) for text, score in zip(texts_chunk, scores_chunk)]
             results.append(result)
         return results
 
@@ -166,7 +179,7 @@ class WordLevelTrOCR(TrOCR):
     ```
     """
 
-    def _predict(self, images: list[np.ndarray], **generation_kwargs) -> list[Result]:
+    def _predict(self, images: list[Image], **generation_kwargs) -> list[list[Text]]:
         config_overrides = {
             "output_scores": True,
             "output_attentions": True,
@@ -174,7 +187,6 @@ class WordLevelTrOCR(TrOCR):
             "num_beams": 1,
             "early_stopping": False,
             "length_penalty": None,
-            "interpolate_pos_encoding": True
         }
 
         for key, value in config_overrides.items():
@@ -194,7 +206,7 @@ class WordLevelTrOCR(TrOCR):
         )
 
         # Warn if `max_new_tokens` was given and the limit was reached
-        n_tokens = outputs.sequences.shape[1] - 1   # -1 to ignore BOS token
+        n_tokens = outputs.sequences.shape[1] - 1  # -1 to ignore BOS token
         max_new_tokens = generation_kwargs.get("max_new_tokens")
         if max_new_tokens and n_tokens >= max_new_tokens:
             logger.warning(
@@ -209,7 +221,7 @@ class WordLevelTrOCR(TrOCR):
         attentions = aggregate_attentions(outputs.cross_attentions)
 
         # Calculate the shape of the attention heatmap
-        image_shape = self.processor.feature_extractor.size
+        image_shape = self.processor.image_processor.size
         patch_size = self.model.config.encoder.patch_size
         heatmap_height = image_shape["height"] // patch_size
         heatmap_width = image_shape["width"] // patch_size
@@ -224,38 +236,31 @@ class WordLevelTrOCR(TrOCR):
             cleanup_tokenization_spaces=False,
         )
         line_scores = self.compute_sequence_confidence_score(outputs)
-        token_scores = self.compute_confidence_per_token(outputs)
         special_tokens = {*self.processor.tokenizer.special_tokens_map.values()}
         results = []
 
-        for i, (sequence, token_scores) in enumerate(zip(outputs.sequences, token_scores)):
+        for i, sequence in enumerate(outputs.sequences):
             tokens = self.processor.batch_decode(sequence)
 
             # Deriving the words from the line (and not by joining the tokens) is a
             # work-around in order to decode special characters correctly.
             words = [word if len(word) else " " for word in lines[i].split(" ")]
 
-            height, width = images[i].shape[:2]
+            width, height = images[i].size
             spaces = attention_based_wordseg(tokens, heatmaps[:, i, :, :], special_tokens, width)
             word_boundaries = list(zip(spaces, spaces[1:]))
-
+            line = Text(text=lines[i], confidence=line_scores[i])
             if len(word_boundaries) != len(words) or any(start >= end_ for start, end_ in word_boundaries):
-                word_boundaries = [(0, width) for _ in words]
                 logger.warning("Word segmentation failed on line with detected text: %s", lines[i])
+                results.append([line])
+                continue
 
-            results.append(
-                Result.word_segmentation_result(
-                    metadata=self.metadata,
-                    orig_shape=(height, width),
-                    words=words,
-                    token_scores=token_scores,
-                    word_scores=[line_scores[i] for _ in words],
-                    labels=["word" for _ in words],
-                    line=lines[i],
-                    line_score=line_scores[i],
-                    bboxes=[(start, 0, end_, height) for start, end_ in word_boundaries],
-                )
-            )
+            words = [
+                Region(Bbox(start, 0, end, height).polygon(), transcription=[Text(text=word)])
+                for (start, end), word in zip(word_boundaries, words)
+            ]
+            results.append([line] + words)
+
         return results
 
 

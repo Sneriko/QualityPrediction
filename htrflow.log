@@ -1,0 +1,22 @@
+zgx-300f - 2026-08-06 08:57:21 UTC - INFO - Include schema from 'file:///home/dgxuser/erik/projects/QualityPrediction/.venv/lib/python3.12/site-packages/xmlschema/schemas/XSD_1.1/xsd11-extra.xsd'
+zgx-300f - 2026-08-06 08:57:21 UTC - INFO - Initialized YOLO model '/home/dgxuser/erik/projects/ultralytics/models/yolo26x_all_gbg_lines_260603/train/weights/best.pt' from /home/dgxuser/erik/projects/ultralytics/models/yolo26x_all_gbg_lines_260603/train/weights/best.pt on device cuda:0
+zgx-300f - 2026-08-06 08:57:21 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 08:57:21 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/model.safetensors "HTTP/1.1 302 Found"
+zgx-300f - 2026-08-06 08:57:22 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/generation_config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 08:57:33 UTC - INFO - Initialized TrOCR model from Riksarkivet/trocr-large-handwritten-hist-swe-3-char on device cuda:0.
+zgx-300f - 2026-08-06 08:57:33 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+zgx-300f - 2026-08-06 08:57:33 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/processor_config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 08:57:34 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/chat_template.json "HTTP/1.1 404 Not Found"
+zgx-300f - 2026-08-06 08:57:34 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/chat_template.jinja "HTTP/1.1 404 Not Found"
+zgx-300f - 2026-08-06 08:57:34 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/audio_tokenizer_config.json "HTTP/1.1 404 Not Found"
+zgx-300f - 2026-08-06 08:57:34 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/processor_config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 08:57:34 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/preprocessor_config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 08:57:34 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/processor_config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 08:57:35 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/preprocessor_config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 08:57:35 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 08:57:35 UTC - INFO - HTTP Request: HEAD https://huggingface.co/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/resolve/main/tokenizer_config.json "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 08:57:35 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+zgx-300f - 2026-08-06 08:57:35 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 08:57:35 UTC - INFO - Initialized TrOCR processor from Riksarkivet/trocr-large-handwritten-hist-swe-3-char.
+zgx-300f - 2026-08-06 08:57:35 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char "HTTP/1.1 200 OK"
+zgx-300f - 2026-08-06 08:57:35 UTC - INFO - HTTP Request: GET https://huggingface.co/api/models/Riksarkivet/trocr-large-handwritten-hist-swe-3-char "HTTP/1.1 200 OK"

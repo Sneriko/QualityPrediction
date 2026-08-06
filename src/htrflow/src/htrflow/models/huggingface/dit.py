@@ -1,13 +1,13 @@
 import logging
 from typing import Literal
 
-import numpy as np
 import torch
+from PIL import Image
 from transformers import AutoImageProcessor, AutoModelForImageClassification
 
+from htrflow.document import Annotation
 from htrflow.models.base_model import BaseModel
 from htrflow.models.download import get_model_info
-from htrflow.results import Result
 
 
 logger = logging.getLogger(__name__)
@@ -71,9 +71,9 @@ class DiT(BaseModel):
 
     def _predict(
         self,
-        images: list[np.ndarray],
+        images: list[Image],
         return_format: Literal["argmax", "softmax"] = "softmax",
-    ) -> list[Result]:
+    ) -> list[Annotation]:
         """Perform inference on `images`
 
         Arguments:
@@ -89,13 +89,7 @@ class DiT(BaseModel):
         with torch.no_grad():
             batch_logits = self.model(inputs.to(self.model.device)).logits
 
-        return [
-            Result(
-                metadata=self.metadata,
-                data={"classification": self._get_labels(logits, return_format)},
-            )
-            for logits in batch_logits
-        ]
+        return [Annotation(classification=self._get_labels(logits, return_format)) for logits in batch_logits]
 
     def _get_labels(self, logits, return_format):
         if return_format == "argmax":
