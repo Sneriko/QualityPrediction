@@ -29,7 +29,7 @@ class ConfidenceMixin:
         scores = transition_scores.sum(axis=1) / (output_length**length_penalty)
         return np.exp(scores).tolist()
 
-    def compute_confidence_per_token(self, outputs) -> list[tuple[str, float]]:
+    def compute_confidence_per_token(self, outputs) -> list[list[tuple[str, float]]]:
         """
         Compute per-token confidence
 
@@ -41,8 +41,17 @@ class ConfidenceMixin:
         result = []
         for sequence, scores in zip(outputs.sequences, transition_scores):
             prompt_end_index = len(sequence) - len(scores)
-            tokens = self.processor.batch_decode(sequence, skip_special_tokens=True)
-            pairs = zip(tokens[prompt_end_index:], scores)
+            # ``batch_decode`` expects a batch of sequences, not a single
+            # one-dimensional sequence. Decode each generated token separately
+            # so that scores stay aligned with their token IDs. Character-level
+            # checkpoints consequently emit characters here without requiring a
+            # second, synthetic character-confidence representation.
+            generated_token_ids = sequence[prompt_end_index:]
+            tokens = [
+                self.processor.tokenizer.decode([int(token_id)], skip_special_tokens=True)
+                for token_id in generated_token_ids
+            ]
+            pairs = zip(tokens, scores)
             result.append([pair for pair in pairs if pair[0]])
         return result
 

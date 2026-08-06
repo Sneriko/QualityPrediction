@@ -228,7 +228,6 @@ class Json(Serializer):
                 transcription = {
                     "text": node.text,
                     "token_scores": node.token_scores,
-                    "character_scores": node.character_scores,
                 }
                 if node.confidence is not None:
                     transcription["confidence"] = node.confidence

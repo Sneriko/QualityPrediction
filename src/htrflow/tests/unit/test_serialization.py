@@ -143,9 +143,6 @@ def test_json_includes_token_confidence_scores(document: Document):
 
     transcription = serialized["regions"][0]["regions"][0]["transcription"][0]
     assert transcription["token_scores"] == [[token, score] for token, score in token_scores]
-    assert transcription["character_scores"] == [
-        [character, score] for token, score in token_scores for character in token
-    ]
 
 
 def test_json_includes_empty_token_confidence_scores(document: Document):
@@ -153,16 +150,7 @@ def test_json_includes_empty_token_confidence_scores(document: Document):
 
     transcription = serialized["regions"][0]["regions"][0]["transcription"][0]
     assert transcription["token_scores"] == []
-    assert transcription["character_scores"] == []
-
-
-def test_json_includes_spaces_in_character_confidence_scores(document: Document):
-    document.regions[0].regions[0].transcription[0].token_scores = [("a", 0.91), (" ", 0.82), ("b", 0.73)]
-
-    serialized = json.loads(Json().serialize(document))
-
-    transcription = serialized["regions"][0]["regions"][0]["transcription"][0]
-    assert transcription["character_scores"] == [["a", 0.91], [" ", 0.82], ["b", 0.73]]
+    assert "character_scores" not in transcription
 
 
 def test_json_preserves_zero_text_confidence(document: Document):
