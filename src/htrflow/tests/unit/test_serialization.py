@@ -1,9 +1,10 @@
+import json
 import xml.etree.ElementTree as ET
 
 import pytest
 
 from htrflow.document import Document, Region, Text
-from htrflow.serialization import AltoXML, PageXML, Serializer
+from htrflow.serialization import AltoXML, Json, PageXML, Serializer
 from htrflow.utils.geometry import Bbox
 
 
@@ -132,3 +133,13 @@ def test_alto_nested_coordinates(document: Document, alto_namespace: dict):
         for i, line in enumerate(block.findall("./TextLine", alto_namespace)):
             assert hpos + i == int(line.attrib.get("HPOS"))
             assert vpos + i == int(line.attrib.get("VPOS"))
+
+
+def test_json_includes_token_confidence_scores(document: Document):
+    token_scores = [("trans", 0.91), ("cription", 0.82)]
+    document.regions[0].regions[0].transcription[0].token_scores = token_scores
+
+    serialized = json.loads(Json().serialize(document))
+
+    transcription = serialized["regions"][0]["regions"][0]["transcription"][0]
+    assert transcription["token_scores"] == [[token, score] for token, score in token_scores]

@@ -129,6 +129,7 @@ class TrOCR(BaseModel, ConfidenceMixin):
 
             texts = self.processor.batch_decode(model_outputs.sequences, skip_special_tokens=True)
             scores = self.compute_sequence_confidence_score(model_outputs)
+            token_scores = self.compute_confidence_per_token(model_outputs)
 
         # Assemble and return a list of Result objects from the prediction outputs.
         # `texts` and `scores` are flattened lists so we need to iterate over them in steps.
@@ -151,7 +152,11 @@ class TrOCR(BaseModel, ConfidenceMixin):
         for i in range(0, len(texts), step):
             texts_chunk = texts[i : i + step]
             scores_chunk = scores[i : i + step]
-            result = [Text(text=text, confidence=score) for text, score in zip(texts_chunk, scores_chunk)]
+            token_scores_chunk = token_scores[i : i + step]
+            result = [
+                Text(text=text, confidence=score, token_scores=per_token_scores)
+                for text, score, per_token_scores in zip(texts_chunk, scores_chunk, token_scores_chunk)
+            ]
             results.append(result)
         return results
 
@@ -236,6 +241,7 @@ class WordLevelTrOCR(TrOCR):
             cleanup_tokenization_spaces=False,
         )
         line_scores = self.compute_sequence_confidence_score(outputs)
+        token_scores = self.compute_confidence_per_token(outputs)
         special_tokens = {*self.processor.tokenizer.special_tokens_map.values()}
         results = []
 
@@ -249,7 +255,7 @@ class WordLevelTrOCR(TrOCR):
             width, height = images[i].size
             spaces = attention_based_wordseg(tokens, heatmaps[:, i, :, :], special_tokens, width)
             word_boundaries = list(zip(spaces, spaces[1:]))
-            line = Text(text=lines[i], confidence=line_scores[i])
+            line = Text(text=lines[i], confidence=line_scores[i], token_scores=token_scores[i])
             if len(word_boundaries) != len(words) or any(start >= end_ for start, end_ in word_boundaries):
                 logger.warning("Word segmentation failed on line with detected text: %s", lines[i])
                 results.append([line])
