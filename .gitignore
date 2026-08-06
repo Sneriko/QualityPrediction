@@ -1,0 +1,9 @@
+/data
+/models
+build/
+dist/
+*.egg-info/
+__pycache__/
+*.py[cod]
+.env
+/.venv

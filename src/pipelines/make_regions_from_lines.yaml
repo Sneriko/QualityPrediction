@@ -1,0 +1,49 @@
+steps:
+
+- step: Segmentation
+  settings:
+    model: yolo
+    model_settings:
+      model: /mnt/work/erik/cer_prediction/train_masks_v1/weights/best.pt
+    generation_settings:
+      batch_size: 2
+
+- step: TextRecognition
+  settings:
+    model: WordLevelTrOCR
+    model_settings:
+      model: /mnt/work/models/trocr-v3/2025-11-26T12:07+00:00-swedish-lion-1ab156bd93dd31e6ded396599e6542b975a9b14d/epoch=4-step=157115-validation_loss=0.2295-cer=0.0451
+    generation_settings:
+      batch_size: 4
+      num_beams: 1
+      max_length: 160
+
+- step: MakeRegionsFromLines
+  settings:
+    line_labels: ["textline"]
+    region_label: "textregion"
+    rebuild_from_scratch: true
+
+    column_gap_frac: 0.08
+    merge_small_columns: true
+    min_lines_per_column: 5
+
+    correction_attach: true
+    correction_max_dy_factor: 4.0
+
+    log_thresholds: true
+
+- step: OrderRegionsAndLinesAfterMakeRegions
+  settings:
+    region_label: "textregion"
+    line_label: "textline"
+    gather_unassigned_lines: true
+    unassigned_region_label: "textregion_unassigned"
+    infer_columns_if_missing: true
+    infer_column_gap_frac: 0.12
+
+- step: Export
+  settings:
+    dest: /home/coder/QualityPrediction/data/eval_from_training/htrflow_output_json_make_regions_pipeline
+    format: json
+

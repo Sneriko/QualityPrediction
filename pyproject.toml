@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quality-prediction"
+version = "0.1.0"
+description = "Quality prediction dataset builder and metrics for HTR pipelines."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.23",
+  "Pillow>=9.0",
+  "scipy>=1.10",
+  "opencv-python-headless>=4.7",
+  "tqdm>=4.66",
+]
+
+[project.scripts]
+qp-build-dataset = "quality_prediction.cli.build_dataset:main"
+qp-evaluate = "quality_prediction.cli.evaluate:main"
+qp-train-xgb = "quality_prediction.cli.train_xgb:main"
+
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

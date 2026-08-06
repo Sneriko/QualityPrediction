@@ -1,0 +1,35 @@
+# HTRflow demo pipeline
+# Single YOLO model outputs both text regions + text lines (flat),
+# then we nest lines into regions before text recognition.
+
+steps:
+
+- step: Segmentation
+  settings:
+    model: yolo
+    model_settings:
+      model: /home/dgxuser/erik/projects/ultralytics/models/yolo26x_all_gbg_lines_260603/train/weights/best.pt
+    generation_settings:
+      batch_size: 2
+
+#- step: NestRegionsAndLines
+#  settings:
+#    region_labels: ["textregion"]
+#    line_labels: ["textline"]
+#    only_if_flat: true
+#    min_line_overlap: 0.9
+#    tie_break: "smallest_region"
+
+- step: TextRecognition
+  settings:
+    model: WordLevelTrocr
+    model_settings:
+      model: /mnt/work/models/swedish-lion-2026/tokenlevel-large-0e405be/epoch=6-step=116662-validation_loss=0.0956-cer=0.0393
+    generation_settings:
+      batch_size: 4
+      num_beams: 1
+
+- step: Export
+  settings:
+    dest: /home/dgxuser/erik/projects/QualityPrediction/data/eval_swedish_lion_26/htrflow_json
+    format: json

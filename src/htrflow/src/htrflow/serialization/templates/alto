@@ -1,0 +1,108 @@
+{%- macro render(nodes) -%}
+    {% for node in nodes  %}
+                <TextBlock ID="{{ node.label }}" HPOS="{{ node.coord.x }}" VPOS="{{ node.coord.y }}" HEIGHT="{{ node.height}}" WIDTH="{{ node.width }}" CS="false">
+                    {%- if node.polygon|length > 2 %}
+                    <Shape>
+                        <Polygon POINTS="{% for point in node.polygon %}{{ point|join(',') }}{% if not loop.last %} {% endif %}{% endfor %}"/>
+                    </Shape>
+                    {%- endif %}
+                    {%- for line in node.children %}
+                    <TextLine ID="{{ line.label }}"  HPOS="{{ line.coord.x }}" VPOS="{{ line.coord.y }}" HEIGHT="{{ line.height}}" WIDTH="{{ line.width }}">
+                        {%- if line.polygon|length > 2 %}
+                        <Shape>
+                            <Polygon POINTS="{% for point in line.polygon %}{{ point|join(',') }}{% if not loop.last %} {% endif %}{% endfor %}"/>
+                        </Shape>
+                        {%- endif %}
+                        {%- if line.children %}
+                        {%- for word in line.children %}
+                        <String ID="{{ word.label }}"  HPOS="{{ word.coord.x }}" VPOS="{{ word.coord.y }}" HEIGHT="{{ word.height}}" WIDTH="{{ word.width }}" CONTENT="{{ xmlescape(word.text) }}" />
+                        {%- endfor %}
+                        {%- else %}
+                        <String HPOS="{{ line.coord.x }}" VPOS="{{ line.coord.y }}" HEIGHT="{{ line.height}}" WIDTH="{{ line.width }}" CONTENT="{{ xmlescape(line.text) }}" WC="{{ line.text_result.top_score() }}"/>
+                        {%- endif %}
+                    </TextLine>
+                    {%- endfor %}
+                </TextBlock>
+    {%- endfor %}
+{%- endmacro -%}
+<?xml version="1.0" encoding="UTF-8"?>
+<alto xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/standards/alto/ns-v4#" xsi:schemaLocation="http://www.loc.gov/standards/alto/ns-v4# http://www.loc.gov/standards/alto/v4/alto-4-4.xsd">
+    <Description>
+        <MeasurementUnit>pixel</MeasurementUnit>
+        <sourceImageInformation>
+            <fileName>{{ page.get('file_name') }}</fileName>
+        </sourceImageInformation>
+        <Processing ID="general">
+            <processingDateTime>{{ metadata.created }}</processingDateTime>
+            <processingSoftware>
+                <softwareCreator>{{ metadata.creator }}</softwareCreator>
+                <softwareName>{{ metadata.software_name }}</softwareName>
+                <softwareVersion>{{ metadata.software_version }}</softwareVersion>
+                <applicationDescription>{{ metadata.application_description }}</applicationDescription>
+            </processingSoftware>
+        </Processing>
+        {%- for step in processing_steps %}
+        <Processing ID="step{{ loop.index }}">
+            <processingStepDescription>{{ step.description }}</processingStepDescription>
+            <processingStepSettings>
+                {%- for key, value in step.settings.items()|sort %}
+                {{ key }}: {{ value }}
+                {%- endfor %}
+            </processingStepSettings>
+        </Processing>
+        {%- endfor %}
+    </Description>
+    {%- if not page.is_leaf() %}
+    <ReadingOrder>
+        <OrderedGroup ID="ro">
+        {%- for node in page recursive %}
+            {%- if node.text %}
+            <ElementRef ID="ro_{{ node.label }}" REF="{{ node.label }}" />
+            {%- else %}
+            <OrderedGroup ID="ro_{{ node.label }}">{{ loop(node.children) }}
+            </OrderedGroup>
+        {%- endif %}
+        {%- endfor %}
+        </OrderedGroup>
+    </ReadingOrder>
+    {%- endif %}
+    <Layout>
+        <Page WIDTH="{{ page.width }}" HEIGHT="{{ page.height }}" PC="{{ '%.4f' % page_confidence }}" PHYSICAL_IMG_NR="0" ID="_{{ page.label }}">
+            {%- if top_margin | length > 0 %}
+            <TopMargin>
+                {{ render(top_margin) }}
+            </TopMargin>
+            {%- else %}
+            <TopMargin />
+            {%- endif -%}
+            {%- if left_margin | length > 0 %}
+            <LeftMargin>
+                {{ render(left_margin) }}
+            </LeftMargin>
+            {%- else %}
+            <LeftMargin />
+            {%- endif -%}
+            {%- if right_margin | length > 0 %}
+            <RightMargin>
+                {{ render(right_margin) }}
+            </RightMargin>
+            {%- else %}
+            <RightMargin />
+            {%- endif -%}
+            {%- if bottom_margin | length > 0 %}
+            <BottomMargin>
+                {{ render(bottom_margin) }}
+            </BottomMargin>
+            {%- else %}
+            <BottomMargin />
+            {%- endif -%}
+            {%- if printspace | length > 0 %}
+            <PrintSpace>
+                {{ render(printspace) }}
+            </PrintSpace>
+            {%- else %}
+            <PrintSpace />
+            {%- endif %}
+        </Page>
+    </Layout>
+</alto>
