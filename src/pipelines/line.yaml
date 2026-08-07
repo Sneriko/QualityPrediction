@@ -36,5 +36,5 @@ steps:
 
 - step: Export
   settings:
-    dest: /home/dgxuser/erik/projects/QualityPrediction/data/eval_swedish_lion_26/htrflow_json
+    dest: /home/dgxuser/erik/projects/QualityPrediction/data/eval_swedish_lion_26/htrflow_json/line_sl26
     format: json

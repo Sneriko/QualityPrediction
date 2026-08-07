@@ -24,11 +24,15 @@ steps:
   settings:
     model: WordLevelTrocr
     model_settings:
-       model: /mnt/work/models/swedish-lion-2026/tokenlevel-large-0e405be/epoch=6-step=116662-validation_loss=0.0956-cer=0.0393
+      model: Riksarkivet/trocr-large-handwritten-hist-swe-3-char
+      model_kwargs:
+        # WordLevelTrOCR needs decoder attentions to locate word boundaries.
+        attn_implementation: eager
     generation_settings:
-       batch_size: 4
-       num_beams: 1
-       max_length: 160
+      batch_size: 4
+      num_beams: 1
+      interpolate_pos_encoding: true
+      max_new_tokens: 160
 # Order regions by reading order
 - step: ReadingOrderMarginalia
   settings:
@@ -36,6 +40,6 @@ steps:
 # Export to Alto and Page XML
 - step: Export
   settings:
-    dest: /home/dgxuser/erik/projects/vlm_eval/outputs/testset_txt
-    format: txt
+    dest: /home/dgxuser/erik/projects/QualityPrediction/data/eval_swedish_lion_26/htrflow_json/region_line_sl26
+    format: json
 
