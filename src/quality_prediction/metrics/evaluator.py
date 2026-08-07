@@ -13,6 +13,44 @@ from quality_prediction.metrics.map import Detection, ap_from_detections
 from quality_prediction.metrics.seg_pr import SegObj, pr_f1_at_iou
 
 
+TARGET_NAMES = (
+    "target_perm_cer_strict",
+    "target_perm_cer_split_tol",
+    "target_perm_cer_split_penalty",
+    "target_perm_cer_htr_only",
+    "target_geom_order_avg_line_cer",
+    "target_avg_line_cer",
+    "target_seg_error",
+    "target_ro_error",
+    "target_delta_cer",
+    "target_pi_missing_ratio",
+    "target_pi_halluc_ratio",
+    "target_avg_missing_ratio",
+    "target_avg_halluc_ratio",
+    "target_gt_num_lines",
+    "target_pred_num_lines",
+    "target_bow_precision",
+    "target_bow_recall",
+    "target_bow_f1",
+    "target_map50_line",
+    "target_map75_line",
+    "target_map50_region",
+    "target_map75_region",
+    "target_iou50_line_precision",
+    "target_iou50_line_recall",
+    "target_iou50_line_f1",
+    "target_iou75_line_precision",
+    "target_iou75_line_recall",
+    "target_iou75_line_f1",
+    "target_soft_iou50_line_precision",
+    "target_soft_iou50_line_recall",
+    "target_soft_iou50_line_f1",
+    "target_soft_iou75_line_precision",
+    "target_soft_iou75_line_recall",
+    "target_soft_iou75_line_f1",
+)
+
+
 
 class PageEvaluator:
     def __init__(self, gt_dir: str, pred_dir: str, xml_suffix: str = ".xml", json_suffix: str = ".json", log_path: str = ""):
@@ -149,6 +187,9 @@ class PageEvaluator:
             "target_soft_iou75_line_f1": sf75,
 
         }
+
+        # Keep the public target catalogue and computed metrics in sync.
+        assert tuple(targets) == TARGET_NAMES
 
         self._log_targets(os.path.splitext(os.path.basename(gt_path))[0], targets)
         return targets

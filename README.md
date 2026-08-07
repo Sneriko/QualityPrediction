@@ -40,6 +40,56 @@ region targets such as `--target target_map50_region` are available. Run
 when `lm` or `interaction` is selected, `--ngram-sets` only for `ngram`, and
 `--bin-config` is optional.
 
+### Swedish Lion 26: JSON-only feature inputs
+
+The following build uses only values embedded in the pipeline JSON (geometry,
+segmentation confidence, HTR confidence, and recognized text). It does **not**
+load the source image, a language model, n-gram sets, or manually supplied
+metadata:
+
+```bash
+GT_DIR=/path/to/corresponding/pagexml_ground_truth
+PRED_DIR=/data/eva_swedish_lion_26/region_line_sl26
+
+qp-build-dataset \
+  --out-csv /data/eva_swedish_lion_26/region_line_sl26_dataset.csv \
+  --dataset sl26 "$GT_DIR" "$PRED_DIR" \
+  --feature segmentation,regionization,layout,htr_confidence,text \
+  --target target_perm_cer_strict,target_map50_line
+```
+
+Pairing is recursive and is by filename stem: for example, `abc.json` is
+paired with `abc.xml`, even when the two files are in different nested
+directories. Duplicate stems within one input tree are ambiguous; only the
+first discovered file is used. The output has one row per matched page and
+includes identifiers, the selected prediction-time features, and the selected
+ground-truth-derived targets.
+
+Repeat `--target`, or provide a comma-separated list, to choose any target
+combination. Omitting `--target` includes every target. To see the authoritative
+choices without starting a build, run:
+
+```bash
+qp-build-dataset --list-targets
+qp-build-dataset --list-features
+```
+
+Useful target families are:
+
+* transcription quality: `target_perm_cer_strict`,
+  `target_perm_cer_htr_only`, `target_avg_line_cer`, and `target_bow_f1`;
+* missing or hallucinated content: `target_pi_missing_ratio` and
+  `target_pi_halluc_ratio`;
+* line segmentation: `target_map50_line`, `target_map75_line`, and the
+  `target_iou*` / `target_soft_iou*` precision, recall, and F1 columns;
+* region segmentation: `target_map50_region` and `target_map75_region`.
+
+Targets are labels computed by comparing JSON predictions with PAGE XML, so
+they may use ground truth; the selected feature columns do not. Avoid the
+`image`, `dit`, `ngram`, `lm`, `lexicon`, and `metadata` groups for the strict
+JSON-only setup above. If the PageXML directory is not the placeholder shown,
+set `GT_DIR` to the directory that recursively contains the matching XML files.
+
 # Contribute
 TODO: Explain how other users and developers can contribute to make your code better. 
 
