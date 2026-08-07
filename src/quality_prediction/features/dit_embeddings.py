@@ -117,8 +117,13 @@ class DiTEmbeddingExtractor:
             img = img.convert("RGB")
         return img
 
-    @torch.inference_mode()
     def embed_image(self, image_path: str) -> np.ndarray:
+        # The dependency is checked by __init__; avoiding a decorator keeps this
+        # optional module importable in environments without PyTorch.
+        with torch.inference_mode():
+            return self._embed_image(image_path)
+
+    def _embed_image(self, image_path: str) -> np.ndarray:
         self._lazy_load()
         assert self._processor is not None
         assert self._model is not None

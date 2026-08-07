@@ -38,6 +38,10 @@ def _finite_floats(values: Iterable[object]) -> List[float]:
 
 
 class PageFeatureExtractor:
+    FEATURE_GROUPS = (
+        "image", "dit", "segmentation", "regionization", "layout",
+        "htr_confidence", "text", "ngram", "lm", "lexicon", "interaction", "metadata",
+    )
     def __init__(
         self,
         image_feature_extractor: Optional[ImageFeatureExtractor] = None,
@@ -432,21 +436,32 @@ class PageFeatureExtractor:
             feats["script_type_code"] = float(hash(self.metadata["script_type"]) % 1000)
         return feats
 
-    def extract_features(self, page: PageDocument) -> Dict[str, float]:
+    def extract_features(self, page: PageDocument, groups: Optional[Iterable[str]] = None) -> Dict[str, float]:
+        selected = set(groups or self.FEATURE_GROUPS)
+        unknown = selected.difference(self.FEATURE_GROUPS)
+        if unknown:
+            raise ValueError(f"Unknown feature groups: {', '.join(sorted(unknown))}")
         feats: Dict[str, float] = {}
-        feats.update(self.image_feature_extractor.extract_all(page.image_path))
+        if "image" in selected:
+            feats.update(self.image_feature_extractor.extract_all(page.image_path))
 
-        if self.dit_extractor is not None:
+        if "dit" in selected and self.dit_extractor is not None:
             feats.update(self.dit_extractor.extract_all(page.image_path))
 
-        feats.update(self._region_line_segmentation_features(page))
-        feats.update(self._regionization_features(page))  # NEW: robust for make_regions, useful for nested too
-        feats.update(self._layout_features(page))
-        feats.update(self._htr_confidence_features(page))
-        feats.update(self._token_category_features(page))
-        feats.update(self._ngram_features(page))
-        feats.update(self._lm_perplexity_features(page))
-        feats.update(self._lexicality_features(page))
-        feats.update(self._spatial_text_interaction_features(page))
-        feats.update(self._metadata_features())
+        extractors = {
+            "segmentation": self._region_line_segmentation_features,
+            "regionization": self._regionization_features,
+            "layout": self._layout_features,
+            "htr_confidence": self._htr_confidence_features,
+            "text": self._token_category_features,
+            "ngram": self._ngram_features,
+            "lm": self._lm_perplexity_features,
+            "lexicon": self._lexicality_features,
+            "interaction": self._spatial_text_interaction_features,
+        }
+        for name, extract in extractors.items():
+            if name in selected:
+                feats.update(extract(page))
+        if "metadata" in selected:
+            feats.update(self._metadata_features())
         return feats

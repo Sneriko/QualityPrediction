@@ -5,7 +5,7 @@ import json
 from tqdm import tqdm
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, List
+from typing import Iterable, List, Optional, Sequence
 
 from xml.etree.ElementTree import ParseError
 
@@ -52,6 +52,8 @@ def build_dataset_multi(
     metadata: MetadataDefaults,
     lambda_ins: float = 1.0,
     force_refit_bins: bool = False,
+    feature_groups: Optional[Sequence[str]] = None,
+    targets: Optional[Sequence[str]] = None,
 ) -> None:
     per_ds_pairs = []
     all_pred_paths: List[Path] = []
@@ -66,7 +68,9 @@ def build_dataset_multi(
         print("No matching GT/PRED page pairs found across datasets; nothing written.")
         return
 
-    bin_cfg = fit_or_load_bins_global(all_pred_paths, resources.global_bin_config, force_refit=force_refit_bins)
+    bin_cfg = None
+    if resources.global_bin_config is not None:
+        bin_cfg = fit_or_load_bins_global(all_pred_paths, resources.global_bin_config, force_refit=force_refit_bins)
     extractor = make_page_feature_extractor(resources, metadata, bin_cfg)
 
     rows: List[dict] = []
@@ -80,7 +84,7 @@ def build_dataset_multi(
             page_id = f"{ds.tag}__{source_page_id}"
 
             try:
-                targets = evaluator.compute_page_metrics(
+                page_targets = evaluator.compute_page_metrics(
                     gt_path=gt_path,
                     pred_path=pred_path,
                     lambda_ins_strict=lambda_ins,
@@ -103,14 +107,20 @@ def build_dataset_multi(
                 continue
 
             try:
-                feats = extractor.extract_features(page_doc)
+                feats = extractor.extract_features(page_doc, groups=feature_groups)
             except Exception as e:
                 print(f"[WARN] skip {page_id} feature error: {e}")
                 continue
 
             row = {"page_id": page_id, "source_page_id": source_page_id, "dataset_tag": ds.tag}
             row.update(feats)
-            row.update(targets)
+            if targets is None:
+                row.update(page_targets)
+            else:
+                missing = set(targets).difference(page_targets)
+                if missing:
+                    raise ValueError(f"Unknown targets: {', '.join(sorted(missing))}")
+                row.update({name: page_targets[name] for name in targets})
             rows.append(row)
 
     if not rows:
@@ -125,4 +135,5 @@ def build_dataset_multi(
         w.writerows(rows)
 
     print(f"Wrote {len(rows)} rows to {out_csv}")
-    print(f"Used global bin config: {resources.global_bin_config}")
+    if resources.global_bin_config is not None:
+        print(f"Used global bin config: {resources.global_bin_config}")

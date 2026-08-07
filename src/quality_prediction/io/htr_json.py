@@ -1,13 +1,50 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
 from quality_prediction.core.geometry import BBox
 from quality_prediction.core.types import PageContent, TextLine as SimpleTextLine
+
+
+def _segmentation_label(obj: Dict[str, Any]) -> str:
+    """Return a normalized label from either supported HTRflow JSON schema."""
+    annotations = obj.get("annotations") or {}
+    return str(obj.get("segmentation_label") or annotations.get("segmentation_label") or "").lower()
+
+
+def _segmentation_confidence(obj: Dict[str, Any]) -> Optional[float]:
+    annotations = obj.get("annotations") or {}
+    value = obj.get("segmentation_confidence", annotations.get("segmentation_confidence"))
+    try:
+        return float(value) if value is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
+def _bbox(obj: Dict[str, Any]) -> BBox:
+    raw = obj.get("bbox")
+    if isinstance(raw, dict):
+        return BBox(float(raw["xmin"]), float(raw["ymin"]), float(raw["xmax"]), float(raw["ymax"]))
+    polygon = obj.get("polygon", "") or ""
+    return BBox.from_page_coords(polygon)
+
+
+def _text_result(obj: Dict[str, Any]) -> TextResult:
+    raw = obj.get("text_result")
+    if isinstance(raw, dict):
+        return TextResult(raw.get("texts", []) or [], raw.get("scores", []) or [])
+    transcriptions = obj.get("transcription") or []
+    texts = [str(t.get("text", "")) for t in transcriptions if isinstance(t, dict)]
+    scores = [t.get("confidence") for t in transcriptions if isinstance(t, dict) and t.get("confidence") is not None]
+    return TextResult(texts, [float(s) for s in scores])
+
+
+def _children(obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+    return [x for x in (obj.get("contains") or obj.get("regions") or []) if isinstance(x, dict)]
 
 
 # ------------------------------
@@ -64,16 +101,16 @@ class TextLine:
 
     @classmethod
     def from_json(cls, obj: Dict[str, Any]) -> "TextLine":
-        tr = obj.get("text_result", {}) or {}
-        bbox_d = obj["bbox"]
+        tr = _text_result(obj)
+        legacy_tr = next((x for x in (obj.get("transcription") or []) if isinstance(x, dict)), {})
         return cls(
             label=obj.get("label", ""),
-            text_result=TextResult(tr.get("texts", []) or [], tr.get("scores", []) or []),
-            token_scores=[(t, float(s)) for t, s in (obj.get("token_scores") or [])],
+            text_result=tr,
+            token_scores=[(t, float(s)) for t, s in (obj.get("token_scores") or legacy_tr.get("token_scores") or [])],
             words=[Word.from_json(w) for w in (obj.get("contains") or []) if isinstance(w, dict)],
-            segmentation_label=obj.get("segmentation_label", "textline"),
-            segmentation_confidence=obj.get("segmentation_confidence"),
-            bbox=BBox(float(bbox_d["xmin"]), float(bbox_d["ymin"]), float(bbox_d["xmax"]), float(bbox_d["ymax"])),
+            segmentation_label=_segmentation_label(obj) or "textline",
+            segmentation_confidence=_segmentation_confidence(obj),
+            bbox=_bbox(obj),
             polygon=obj.get("polygon", "") or "",
         )
 
@@ -105,18 +142,14 @@ class TextRegion:
 
     @classmethod
     def from_json(cls, obj: Dict[str, Any]) -> "TextRegion":
-        bbox_d = obj["bbox"]
-        raw_lines = obj.get("contains", []) or []
+        raw_lines = _children(obj)
         lines: List[TextLine] = []
         for tl in raw_lines:
             if not isinstance(tl, dict):
                 continue
-            if tl.get("segmentation_label", "textline") != "textline":
+            if _segmentation_label(tl) not in ("", "textline"):
                 continue
-            tr = tl.get("text_result")
-            if not isinstance(tr, dict):
-                continue
-            texts = tr.get("texts", []) or []
+            texts = _text_result(tl).texts
             if not texts or not any(str(t).strip() for t in texts):
                 continue
             try:
@@ -127,9 +160,9 @@ class TextRegion:
         return cls(
             label=obj.get("label", ""),
             lines=lines,
-            segmentation_label=obj.get("segmentation_label", "textregion"),
-            segmentation_confidence=obj.get("segmentation_confidence"),
-            bbox=BBox(float(bbox_d["xmin"]), float(bbox_d["ymin"]), float(bbox_d["xmax"]), float(bbox_d["ymax"])),
+            segmentation_label=_segmentation_label(obj) or "textregion",
+            segmentation_confidence=_segmentation_confidence(obj),
+            bbox=_bbox(obj),
             polygon=obj.get("polygon", "") or "",
         )
 
@@ -141,42 +174,33 @@ class PageDocument:
     image_name: str
     label: str
     regions: List[TextRegion]
+    lines: List[TextLine] = field(default_factory=list)
 
     @classmethod
     def from_json(cls, obj: Dict[str, Any]) -> "PageDocument":
-        raw_items = obj.get("contains", []) or []
+        raw_items = _children(obj)
         regions: List[TextRegion] = []
+        lines: List[TextLine] = []
 
         def is_textline_like(item: Dict[str, Any]) -> bool:
-            tr = item.get("text_result")
-            if not isinstance(tr, dict):
+            if not _text_result(item).texts:
                 return False
-            children = item.get("contains") or []
-            has_child_textlines = any(isinstance(ch, dict) and ch.get("segmentation_label") == "textline" for ch in children)
+            children = _children(item)
+            has_child_textlines = any(_segmentation_label(ch) == "textline" for ch in children)
             return not has_child_textlines
 
         for item in raw_items:
             if not isinstance(item, dict):
                 continue
-            seg_label = item.get("segmentation_label", "")
+            seg_label = _segmentation_label(item)
 
-            # Flat style: top-level textlines
+            # Flat style: top-level textlines. Keep these as page lines rather
+            # than inventing regions that were not produced by the model.
             if seg_label == "textline" or is_textline_like(item):
                 try:
-                    line_obj = TextLine.from_json(item)
+                    lines.append(TextLine.from_json(item))
                 except Exception:
                     continue
-                # wrap into an implicit region so downstream code stays stable
-                regions.append(
-                    TextRegion(
-                        label=item.get("label", "implicit_region"),
-                        lines=[line_obj],
-                        segmentation_label="textregion",
-                        segmentation_confidence=item.get("segmentation_confidence"),
-                        bbox=line_obj.bbox,
-                        polygon=item.get("polygon", "") or "",
-                    )
-                )
                 continue
 
             # Normal region
@@ -186,28 +210,30 @@ class PageDocument:
                 continue
 
         return cls(
-            file_name=obj.get("file_name", ""),
-            image_path=obj.get("image_path", ""),
+            file_name=obj.get("file_name", obj.get("image_name", "")),
+            image_path=obj.get("image_path", obj.get("_image_path", "")),
             image_name=obj.get("image_name", ""),
             label=obj.get("label", ""),
             regions=regions,
+            lines=lines,
         )
 
     @property
     def all_lines(self) -> List[TextLine]:
-        out: List[TextLine] = []
+        out: List[TextLine] = list(self.lines)
         for r in self.regions:
             out.extend(r.lines)
         return out
 
     @property
     def page_bbox(self) -> Optional[BBox]:
-        if not self.regions:
+        objects = [*self.regions, *self.lines]
+        if not objects:
             return None
-        xmin = min(r.bbox.xmin for r in self.regions)
-        ymin = min(r.bbox.ymin for r in self.regions)
-        xmax = max(r.bbox.xmax for r in self.regions)
-        ymax = max(r.bbox.ymax for r in self.regions)
+        xmin = min(obj.bbox.xmin for obj in objects)
+        ymin = min(obj.bbox.ymin for obj in objects)
+        xmax = max(obj.bbox.xmax for obj in objects)
+        ymax = max(obj.bbox.ymax for obj in objects)
         return BBox(xmin, ymin, xmax, ymax)
 
 
@@ -229,30 +255,8 @@ class HtrJsonParser:
         return PageContent(lines=self._extract_lines(data))
 
     def _extract_lines(self, data: dict) -> List[SimpleTextLine]:
-        out: List[SimpleTextLine] = []
-        items = data.get("contains", []) or []
-
-        for item in items:
-            if not isinstance(item, dict):
-                continue
-
-            if item.get("segmentation_label") == "textline":
-                maybe = self._parse_one_line(item)
-                if maybe:
-                    out.append(maybe)
-                continue
-
-            # region-like: parse children
-            for tl in (item.get("contains") or []):
-                if not isinstance(tl, dict):
-                    continue
-                if tl.get("segmentation_label") != "textline":
-                    continue
-                maybe = self._parse_one_line(tl)
-                if maybe:
-                    out.append(maybe)
-
-        return out
+        page = PageDocument.from_json(data)
+        return [SimpleTextLine(text=line.full_text, bbox=line.bbox) for line in page.all_lines]
 
     def _parse_one_line(self, tl: dict) -> Optional[SimpleTextLine]:
         tr = tl.get("text_result", {}) or {}
@@ -287,49 +291,26 @@ class HtrJsonDetectionsParser:
         region_dets: List[Detection] = []
         line_dets: List[Detection] = []
 
-        items = data.get("contains", []) or []
-        for item in items:
-            if not isinstance(item, dict):
-                continue
-            seg_label = item.get("segmentation_label", "")
-
-            # Region detection: anything non-textline with a bbox
-            bbox_d = item.get("bbox")
-            if isinstance(bbox_d, dict) and seg_label != "textline":
-                det = self._det_from(item, bbox_d)
+        def visit(item: Dict[str, Any]) -> None:
+            label = _segmentation_label(item)
+            if label in ("textline", "textregion"):
+                det = self._det_from(item)
                 if det:
-                    region_dets.append(det)
+                    (line_dets if label == "textline" else region_dets).append(det)
+            for child in _children(item):
+                visit(child)
 
-            # Flat textline detection
-            if seg_label == "textline":
-                lb = item.get("bbox")
-                if isinstance(lb, dict):
-                    det = self._det_from(item, lb)
-                    if det:
-                        line_dets.append(det)
-                continue
-
-            # Nested lines
-            for tl in (item.get("contains") or []):
-                if not isinstance(tl, dict):
-                    continue
-                if tl.get("segmentation_label") != "textline":
-                    continue
-                lb = tl.get("bbox")
-                if not isinstance(lb, dict):
-                    continue
-                det = self._det_from(tl, lb)
-                if det:
-                    line_dets.append(det)
+        for item in _children(data):
+            visit(item)
 
         return region_dets, line_dets
 
-    def _det_from(self, obj: dict, bbox_d: dict) -> Optional[Detection]:
+    def _det_from(self, obj: dict) -> Optional[Detection]:
         try:
-            bbox = BBox(float(bbox_d["xmin"]), float(bbox_d["ymin"]), float(bbox_d["xmax"]), float(bbox_d["ymax"]))
+            bbox = _bbox(obj)
         except Exception:
             return None
-        score = obj.get("segmentation_confidence")
+        score = _segmentation_confidence(obj)
         try:
             s = float(score) if score is not None and np.isfinite(score) else 1.0
         except Exception:
