@@ -50,12 +50,16 @@ def load_lexicon_store_from_manifest(manifest_path: str) -> LexiconStore:
     return LexiconStore(lexicons=lexicons, norm=norm_cfg)
 
 
-def make_page_feature_extractor(resources: ResourcePaths, metadata: MetadataDefaults, bin_config: ConfidenceBinConfig) -> PageFeatureExtractor:
-    ngram_model = NgramModel.load(resources.char_ngram_model)
-    lm_scorer = NgramLMPerplexityScorer(ngram_model, smoothing_k=1.0)
+def make_page_feature_extractor(resources: ResourcePaths, metadata: MetadataDefaults, bin_config: ConfidenceBinConfig | None) -> PageFeatureExtractor:
+    lm_scorer = None
+    if resources.char_ngram_model is not None:
+        ngram_model = NgramModel.load(resources.char_ngram_model)
+        lm_scorer = NgramLMPerplexityScorer(ngram_model, smoothing_k=1.0)
 
-    with resources.ngram_sets.open("rb") as f:
-        ngram_sets = pickle.load(f)
+    ngram_resource = None
+    if resources.ngram_sets is not None:
+        with resources.ngram_sets.open("rb") as f:
+            ngram_resource = NgramResource(ngram_sets=pickle.load(f))
 
 
     # ---- OPTIONAL DiT ----
@@ -76,11 +80,10 @@ def make_page_feature_extractor(resources: ResourcePaths, metadata: MetadataDefa
 
     return PageFeatureExtractor(
         image_feature_extractor=ImageFeatureExtractor(),
-        ngram_resource=NgramResource(ngram_sets=ngram_sets),
+        ngram_resource=ngram_resource,
         lm_scorer=lm_scorer,
         lexicons=lexicons,  # <-- changed
         metadata={"century": metadata.century, "script_type": metadata.script_type},
         bin_config=bin_config,
         dit_extractor=dit_extractor,
     )
-

@@ -8,10 +8,10 @@ from typing import Optional
 @dataclass(frozen=True)
 class ResourcePaths:
     """External resources used by feature extraction."""
-    char_ngram_model: Path
-    ngram_sets: Path
-    global_bin_config: Path
-    lexicon_manifest_json: Path
+    char_ngram_model: Optional[Path] = None
+    ngram_sets: Optional[Path] = None
+    global_bin_config: Optional[Path] = None
+    lexicon_manifest_json: Optional[Path] = None
 
     # --- NEW: DiT embedding options (all optional) ---
     use_dit: bool = False
@@ -27,4 +27,3 @@ class MetadataDefaults:
     """Weak metadata features you can attach to all pages."""
     century: Optional[int] = None
     script_type: Optional[str] = None
-    

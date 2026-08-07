@@ -11,6 +11,35 @@ TODO: Guide users through getting your code up and running on their own system. 
 # Build and Test
 TODO: Describe and show how to build your code and run the tests. 
 
+## Building a quality-prediction dataset
+
+`qp-build-dataset` accepts both HTRflow layouts used by Swedish Lion 26:
+
+* pages whose top-level `regions` are text lines; and
+* pages containing text regions, with text lines in their nested `regions`.
+
+Line-only pages retain their lines directly and have zero text regions; the
+loader does not synthesize one region per line.
+
+Select only feature groups supported by a pipeline with repeatable `--feature`
+arguments (a comma-separated value is also accepted). Select target columns in
+the same way with `--target`. For example, a line-only prediction can omit all
+region-specific features and targets:
+
+```bash
+qp-build-dataset \
+  --out-csv line-quality.csv \
+  --feature htr_confidence,text,layout \
+  --target target_perm_cer_strict,target_map50_line \
+  --dataset sl26 ground-truth/page line_sl26
+```
+
+For region-then-line output, `--feature segmentation,regionization,layout` and
+region targets such as `--target target_map50_region` are available. Run
+`qp-build-dataset --help` for every feature group. `--char-lm` is needed only
+when `lm` or `interaction` is selected, `--ngram-sets` only for `ngram`, and
+`--bin-config` is optional.
+
 # Contribute
 TODO: Explain how other users and developers can contribute to make your code better. 
 
