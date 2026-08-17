@@ -33,6 +33,56 @@ def _bbox(obj: Dict[str, Any]) -> BBox:
     return BBox.from_page_coords(polygon)
 
 
+def _translate_bbox(box: BBox, dx: float, dy: float) -> BBox:
+    return BBox(box.xmin + dx, box.ymin + dy, box.xmax + dx, box.ymax + dy)
+
+
+def _translate_polygon(polygon: str, dx: float, dy: float) -> str:
+    if not polygon or (dx == 0.0 and dy == 0.0):
+        return polygon
+    points = []
+    for pair in polygon.strip().split():
+        x_str, y_str = pair.split(",")
+        points.append(f"{float(x_str) + dx:g},{float(y_str) + dy:g}")
+    return " ".join(points)
+
+
+def _contains_center(parent: BBox, child: BBox) -> bool:
+    x, y = child.center
+    return parent.xmin <= x <= parent.xmax and parent.ymin <= y <= parent.ymax
+
+
+def _child_coordinate_offset(parent: BBox, children: List[Dict[str, Any]]) -> Tuple[float, float]:
+    """Detect HTRflow crop-local child coordinates and return their page offset.
+
+    Region-then-line pipelines run line segmentation on a cropped region. HTRflow
+    serializes those child polygons in crop coordinates while the region polygon
+    is in page coordinates. Some other JSON producers serialize absolute child
+    coordinates, so compare both interpretations rather than translating every
+    nested object unconditionally.
+    """
+    boxes = []
+    for child in children:
+        try:
+            boxes.append(_bbox(child))
+        except (KeyError, TypeError, ValueError):
+            continue
+    if not boxes:
+        return (0.0, 0.0)
+
+    dx, dy = parent.xmin, parent.ymin
+    raw_score = sum(_contains_center(parent, box) for box in boxes)
+    translated_score = sum(_contains_center(parent, _translate_bbox(box, dx, dy)) for box in boxes)
+    return (dx, dy) if translated_score > raw_score else (0.0, 0.0)
+
+
+def _translate_line(line: "TextLine", dx: float, dy: float) -> None:
+    if dx == 0.0 and dy == 0.0:
+        return
+    line.bbox = _translate_bbox(line.bbox, dx, dy)
+    line.polygon = _translate_polygon(line.polygon, dx, dy)
+
+
 def _text_result(obj: Dict[str, Any]) -> TextResult:
     raw = obj.get("text_result")
     if isinstance(raw, dict):
@@ -143,6 +193,8 @@ class TextRegion:
     @classmethod
     def from_json(cls, obj: Dict[str, Any]) -> "TextRegion":
         raw_lines = _children(obj)
+        region_bbox = _bbox(obj)
+        dx, dy = _child_coordinate_offset(region_bbox, raw_lines)
         lines: List[TextLine] = []
         for tl in raw_lines:
             if not isinstance(tl, dict):
@@ -153,7 +205,9 @@ class TextRegion:
             if not texts or not any(str(t).strip() for t in texts):
                 continue
             try:
-                lines.append(TextLine.from_json(tl))
+                line = TextLine.from_json(tl)
+                _translate_line(line, dx, dy)
+                lines.append(line)
             except Exception:
                 continue
 
@@ -162,7 +216,7 @@ class TextRegion:
             lines=lines,
             segmentation_label=_segmentation_label(obj) or "textregion",
             segmentation_confidence=_segmentation_confidence(obj),
-            bbox=_bbox(obj),
+            bbox=region_bbox,
             polygon=obj.get("polygon", "") or "",
         )
 
@@ -291,21 +345,26 @@ class HtrJsonDetectionsParser:
         region_dets: List[Detection] = []
         line_dets: List[Detection] = []
 
-        def visit(item: Dict[str, Any]) -> None:
+        def visit(item: Dict[str, Any], offset: Tuple[float, float] = (0.0, 0.0)) -> None:
             label = _segmentation_label(item)
             if label in ("textline", "textregion"):
-                det = self._det_from(item)
+                det = self._det_from(item, offset)
                 if det:
                     (line_dets if label == "textline" else region_dets).append(det)
-            for child in _children(item):
-                visit(child)
+            children = _children(item)
+            child_offset = offset
+            if label == "textregion" and det is not None:
+                local_dx, local_dy = _child_coordinate_offset(det.bbox, children)
+                child_offset = (local_dx, local_dy) if (local_dx or local_dy) else offset
+            for child in children:
+                visit(child, child_offset)
 
         for item in _children(data):
             visit(item)
 
         return region_dets, line_dets
 
-    def _det_from(self, obj: dict) -> Optional[Detection]:
+    def _det_from(self, obj: dict, offset: Tuple[float, float] = (0.0, 0.0)) -> Optional[Detection]:
         try:
             bbox = _bbox(obj)
         except Exception:
@@ -316,5 +375,7 @@ class HtrJsonDetectionsParser:
         except Exception:
             s = 1.0
 
-        poly = obj.get("polygon", "") or ""
+        dx, dy = offset
+        bbox = _translate_bbox(bbox, dx, dy)
+        poly = _translate_polygon(obj.get("polygon", "") or "", dx, dy)
         return Detection(bbox=bbox, score=s, polygon=poly)

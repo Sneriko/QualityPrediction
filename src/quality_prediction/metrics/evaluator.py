@@ -116,10 +116,6 @@ class PageEvaluator:
         pred_region = [Detection(d.bbox, d.score) for d in pred_region_raw]
         pred_line = [Detection(d.bbox, d.score) for d in pred_line_raw]
 
-        # Build objects with polygons when available
-        gt_line_objs = [SegObj(bbox=l.bbox, polygon="") for l in gt_page.lines if l.bbox is not None]  # ALTO: no polygon
-        pred_line_objs = [SegObj(bbox=d.bbox, polygon=getattr(d, "polygon", "") or "") for d in pred_line_raw]
-
         p50, r50, f50 = pr_f1_at_iou(gt_line_objs, pred_line_objs, 0.50, soft=False)
         p75, r75, f75 = pr_f1_at_iou(gt_line_objs, pred_line_objs, 0.75, soft=False)
 
