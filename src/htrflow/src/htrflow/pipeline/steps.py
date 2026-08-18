@@ -162,6 +162,36 @@ class TextRecognition(Inference):
     pass
 
 
+class QualityPrediction(PipelineStep):
+    """Predict page quality with a trained XGBoost model.
+
+    This step consumes the current in-memory document tree and stores its
+    result in the document annotations, which makes it part of a later JSON
+    export. It must be placed after recognition and before ``Export``.
+
+    Example YAML:
+    ```yaml
+    - step: QualityPrediction
+      settings:
+        model: models/json_model_only_target_bow_f1.joblib
+        target: target_bow_f1
+    ```
+    """
+
+    def __init__(self, model: str, target: str = "quality", feature_groups=None, feature_names=None):
+        from quality_prediction.inference import JSON_FEATURE_GROUPS, XGBoostQualityPredictor
+
+        groups = feature_groups or JSON_FEATURE_GROUPS
+        self.target = target
+        self.predictor = XGBoostQualityPredictor(model, groups, feature_names)
+        self.metadata = StepMetadata(str(self), {"model": model, "target": target})
+
+    def run(self, document: Document):
+        predictions = document.annotations.setdefault("quality_prediction", {})
+        predictions[self.target] = self.predictor.predict(document)
+        return document
+
+
 class WordSegmentation(PipelineStep):
     """
     Segment lines into words.

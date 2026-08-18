@@ -97,3 +97,30 @@ If you want to learn more about creating good readme files then refer the follow
 - [ASP.NET Core](https://github.com/aspnet/Home)
 - [Visual Studio Code](https://github.com/Microsoft/vscode)
 - [Chakra Core](https://github.com/Microsoft/ChakraCore)
+
+## Predicting quality inside HTRflow
+
+Install HTRflow itself, then add `QualityPrediction` after text recognition and
+before the JSON export. HTRflow installs the `quality_prediction` package as a
+runtime dependency. Feature extraction, model loading, dataset building, and
+training remain owned by that package; HTRflow contains only the pipeline
+integration. The step reads HTRflow's in-memory `Document` tree directly and
+does not create or re-read an intermediate JSON file.
+
+```yaml
+- step: QualityPrediction
+  settings:
+    model: models/json_model_only_target_bow_f1.joblib
+    target: target_bow_f1
+- step: Export
+  settings:
+    format: json
+    dest: output
+```
+
+The exported document contains the result under
+`annotations.quality_prediction.target_bow_f1`. By default the step extracts
+the JSON/model-output feature groups (`segmentation`, `regionization`,
+`layout`, `htr_confidence`, and `text`). Models trained without embedded
+feature names can instead receive an ordered `feature_names` list in their
+step settings.
