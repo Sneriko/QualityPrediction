@@ -16,6 +16,14 @@ dependencies = [
   "tqdm>=4.66",
 ]
 
+[project.optional-dependencies]
+modeling = [
+  "joblib>=1.3",
+  "pandas>=2.0",
+  "scikit-learn>=1.3",
+  "xgboost>=2.0",
+]
+
 [project.scripts]
 qp-build-dataset = "quality_prediction.cli.build_dataset:main"
 qp-evaluate = "quality_prediction.cli.evaluate:main"
