@@ -46,10 +46,56 @@ non-numeric and are excluded automatically.
 ## First-pass commands
 
 Run from the repository root after installing the package and its modeling
-dependencies (`pandas`, `scikit-learn`, `xgboost`, and `joblib`). These commands
-use the built-in deterministic 80/20 development split and modest search
-budgets. Separate output trees prevent one pipeline's identically named model
-files from overwriting the other's.
+dependencies:
+
+```bash
+uv sync --extra modeling
+```
+
+### Exact all-target, all-feature runs
+
+The following is the minimal recipe for one independently optimized model per
+`target_*` column, using every usable feature in each CSV. Omitting `--targets`
+makes the trainer discover all five target columns in the respective file.
+`--feature-sets full` selects every numeric or Boolean non-target column and
+automatically drops identifiers/text fields, all-missing columns, and constant
+columns. Do not pass both CSVs to one command: that would concatenate two
+different pipeline representations and schemas into one training table.
+
+```bash
+uv run qp-train-xgb \
+  --train-csv data/eval_swedish_lion_26/line_sl26_refit_bins_dataset.csv \
+  --feature-sets full \
+  --model-dir models/sl26/line_all_features \
+  --log-dir models/sl26/line_all_features/logs \
+  --feature-analysis-dir models/sl26/line_all_features/feature_analysis \
+  --val-size 0.20 \
+  --n-trials-full 100 \
+  --early-stopping-rounds 40
+
+uv run qp-train-xgb \
+  --train-csv data/eval_swedish_lion_26/region_line_sl26_refit_bins_dataset.csv \
+  --feature-sets full \
+  --model-dir models/sl26/region_line_all_features \
+  --log-dir models/sl26/region_line_all_features/logs \
+  --feature-analysis-dir models/sl26/region_line_all_features/feature_analysis \
+  --val-size 0.20 \
+  --n-trials-full 100 \
+  --early-stopping-rounds 40
+```
+
+Each of the 100 trials samples tree count/depth, learning rate, row and column
+subsampling, child weight, gamma, and L1/L2 regularization, and early stopping
+uses the validation split. Increase `--n-trials-full` for a larger random
+search. The model directory receives one Joblib model per target; the log
+directory receives validation predictions, trial metrics, and summary metrics;
+and the feature-analysis directory receives importance reports.
+
+### Recommended baseline and feature-selection comparison
+
+These more extensive commands use the built-in deterministic 80/20 development
+split and modest search budgets. Separate output trees prevent one pipeline's
+identically named model files from overwriting the other's.
 
 ```bash
 COMMON_TARGETS=target_bow_f1,target_bow_precision,target_bow_recall,target_perm_cer_htr_only,target_map50_line
