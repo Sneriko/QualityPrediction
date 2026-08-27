@@ -34,7 +34,17 @@ steps:
       interpolate_pos_encoding: true
       max_new_tokens: 160
 
+- step: QualityPrediction
+  settings:
+    model: /home/dgxuser/erik/projects/QualityPrediction/models/sl26/line_all_features/xgb_hpo_full_target_bow_f1.joblib
+    target: target_bow_f1
+    feature_groups:
+      - segmentation
+      - layout
+      - htr_confidence
+      - text
+
 - step: Export
   settings:
-    dest: /home/dgxuser/erik/projects/QualityPrediction/data/eval_swedish_lion_26/htrflow_json/line_sl26
+    dest: /home/dgxuser/erik/projects/QualityPrediction/data/eval_swedish_lion_26/test_qp_step
     format: json
