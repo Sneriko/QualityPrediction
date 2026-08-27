@@ -3,6 +3,8 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 
+import numpy as np
+
 
 HTRFLOW_SRC = Path(__file__).parents[1] / "src" / "htrflow" / "src"
 sys.path.insert(0, str(HTRFLOW_SRC))
@@ -11,7 +13,10 @@ from htrflow.document import Region, Text  # noqa: E402
 from htrflow.pipeline.steps import QualityPrediction  # noqa: E402
 from htrflow.serialization import get_serializer  # noqa: E402
 from htrflow.utils.geometry import Polygon  # noqa: E402
-from quality_prediction.inference import page_document_from_htrflow  # noqa: E402
+from quality_prediction.inference import (  # noqa: E402
+    XGBoostQualityPredictor,
+    page_document_from_htrflow,
+)
 
 
 def _polygon(xmin, ymin, xmax, ymax):
@@ -76,3 +81,10 @@ def test_step_annotation_is_included_in_json_export():
 
     assert returned is document
     assert output["annotations"]["quality_prediction"]["target_bow_f1"] == 0.625
+
+
+def test_predictor_reads_numpy_feature_names():
+    predictor = XGBoostQualityPredictor.__new__(XGBoostQualityPredictor)
+    predictor.model = SimpleNamespace(feature_names_in_=np.array(["first", "second"]))
+
+    assert predictor._model_feature_names() == ["first", "second"]

@@ -130,7 +130,7 @@ class XGBoostQualityPredictor:
         names = getattr(self.model, "feature_names_in_", None)
         if names is None and hasattr(self.model, "get_booster"):
             names = self.model.get_booster().feature_names
-        return list(names or [])
+        return [] if names is None else list(names)
 
     def predict(self, document: Any) -> float:
         import pandas as pd
